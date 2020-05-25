@@ -114,13 +114,26 @@ class Hero extends ActiveActor {
 	}
 	animation() {
 		var k = control.getKey();
-        if( k == ' ' ) { alert('SHOOT') ; return; }
+        if( k == ' ' ) { 
+			if(this.imageName == "hero_runs_right"){
+				if(control.world[this.x +1][this.y +1] == "brick" && (control.world[this.x +1][this.y] != "brick" || control.world[this.x +1][this.y] != "chimney"))
+				control.world[this.x +1][this.y +1].hide();
+			}
+			else{
+			alert('SHOOT') ; return; }
+		}
         if( k == null ) return;
         let [dx, dy] = k;
-        this.hide();
-        this.x += dx;
+		this.hide(); //esconde onde eesta
+		if(dx == -1)
+		this.imageName = "hero_runs_left";
+		else{
+		if(dx == 1)
+			this.imageName = "hero_runs_right";
+		}
+        this.x += dx; //move
         this.y += dy;
-        this.show();
+        this.show();//mostra new place
 	}
 }
 
