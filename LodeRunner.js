@@ -115,13 +115,26 @@ class Hero extends ActiveActor {
 	animation() {
 		var k = control.getKey();
         if( k == ' ' ) { 
-			if(this.imageName == "hero_runs_right"){
-				if(control.world[this.x +1][this.y +1] == "brick" && (control.world[this.x +1][this.y] != "brick" || control.world[this.x +1][this.y] != "chimney"))
+			if(this.imageName === "hero_runs_right"){
+				if(control.world[this.x +1][this.y +1] instanceof Brick && !(control.world[this.x +1][this.y] instanceof Brick) && !(control.world[this.x +1][this.y] instanceof Stone))
 				control.world[this.x +1][this.y +1].hide();
+				return;
 			}
 			else{
-			alert('SHOOT') ; return; }
+				if(this.imageName === "hero_runs_left"){
+					if(control.world[this.x -1][this.y +1] instanceof Brick && !(control.world[this.x -1][this.y] instanceof Brick) && !(control.world[this.x -1][this.y] instanceof Stone)){
+					control.world[this.x  -1][this.y +1].hide();
+					if(!(control.world[this.x + 1][this.y] instanceof Brick) && !(control.world[this.x + 1][this.y] instanceof Stone) && ((control.world[this.x + 1][this.y +1] instanceof Brick) || (control.world[this.x + 1][this.y +1] instanceof Stone) || (control.world[this.x + 1][this.y +1] instanceof Ladder))){
+						this.hide();
+						this.x += 1;
+						this.show();
+					}
+					return;
+					}
 		}
+	}
+return;
+}
         if( k == null ) return;
         let [dx, dy] = k;
 		this.hide(); //esconde onde eesta
