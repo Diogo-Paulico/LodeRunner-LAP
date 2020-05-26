@@ -93,12 +93,20 @@ class ActiveActor extends Actor {
 		}
 		if(dy == -1){
 			if(control.world[this.x][this.y] instanceof Ladder){
+				if(this instanceof Robot)
+					this.imageName = "robot_on_ladder_left";
+				else
+				this.imageName = "hero_on_ladder_left";
 				this.y -= 1;
 				return;
 			}
 		}
 		if(dy == 1){
 			if(control.world[this.x][this.y + 1] instanceof Ladder || (control.world[this.x][this.y] instanceof Rope && !(control.world[this.x][this.y + 1] instanceof Brick || control.world[this.x][this.y + 1] instanceof Stone))){
+				if(this instanceof Robot)
+					this.imageName = "robot_on_ladder_left";
+				else
+					this.imageName = "hero_on_ladder_left";
 				this.y += 1;
 				return;
 			}
@@ -129,23 +137,15 @@ class Invalid extends PassiveActor {
 }
 
 class Ladder extends PassiveActor {
-	constructor(x, y) {
-		super(x, y, "ladder");
-		this.visible = false;
-	}
-	show() {
-		if( this.visible )
-			super.show();
-	}
-	hide() {
-		if( this.visible )
-			super.hide();
-	}
-	makeVisible() {
-		this.visible = true;
-		this.show();
-	}
-}
+        constructor(x, y) {
+            super(x, y, "empty");
+        }
+        makeVisible() {
+            this.imageName = "ladder";
+            this.show();
+        }
+    }
+
 
 class Rope extends PassiveActor {
 	constructor(x, y) { super(x, y, "rope"); }
@@ -164,8 +164,10 @@ class Hero extends ActiveActor {
 		var k = control.getKey();
 		if(this.isFalling()){
 			this.hide();
+			this.imageName = "hero_falls_left";
 			this.y += 1;
 			this.show();
+			return;
 		}
         if( k == ' ' ) { 
 			if(this.imageName === "hero_runs_right"){
