@@ -48,6 +48,7 @@ class ActiveActor extends Actor {
 		this.time = 0;	// timestamp used in the control of the animations
 	}
 	show() {
+		//alterar imagename aqui?
 		control.worldActive[this.x][this.y] = this;
 		this.draw(this.x, this.y);
 	}
@@ -334,8 +335,15 @@ function onLoad() {
 	GameImages.loadAll(function() { new GameControl(); });
 }
 
-function b1() { mesg("button1") }
-function b2() { mesg("button2") }
+let audio = null;
+function b1() { 
+	if( audio == null )
+        audio = new Audio("http://home.jumpman.fr/partage/smash/Individual%20tracks%20%28aac%29/24-04%20Sonic%20Boom%20%5BSonic%20CD%5D.m4a");
+    audio.loop = true;
+    audio.play();  // requires a previous user interaction with the page
+ }
+
+function b2() {audio.pause(); }
 
 
 
