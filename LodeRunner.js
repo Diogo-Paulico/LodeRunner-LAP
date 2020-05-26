@@ -45,6 +45,7 @@ class PassiveActor extends Actor {
 class ActiveActor extends Actor {
     constructor(x, y, imageName) {
 		super(x, y, imageName);
+		this.left = true;
 		this.time = 0;	// timestamp used in the control of the animations
 	}
 	show() {
@@ -66,29 +67,50 @@ class ActiveActor extends Actor {
 		}
 		else return false;
 	}
+
 	move(dx,dy){
 		if(dx == -1){
 			if(control.world[this.x - 1][this.y] instanceof Ladder || control.world[this.x - 1][this.y] instanceof Rope || control.world[this.x - 1][this.y] instanceof Empty || control.world[this.x - 1][this.y] instanceof Gold){
+				if(this instanceof Robot)
+					this.imageName = "robot_runs_left";
+				else
+					this.imageName = "hero_runs_left";
+	
 				if(( control.world[this.x - 1][this.y + 1] instanceof Empty) && this instanceof Robot){
 					if(control.world[this.x - 1][this.y] instanceof Rope){
+						this.imageName = "robot_on_rope_left";
 						this.x -= 1;
 					}
 				}
-				else
+				else{
+					if(control.world[this.x + 1][this.y] instanceof Rope && this instanceof Hero){
+						this.imageName = "hero_on_rope_left";
+					}
+				
 				this.x -= 1;
 				return;
 			}
 		}
+		}
 		if(dx == 1){
 			if(control.world[this.x + 1][this.y] instanceof Ladder || control.world[this.x + 1][this.y] instanceof Rope || control.world[this.x + 1][this.y] instanceof Empty || control.world[this.x + 1][this.y] instanceof Gold){
+				if(this instanceof Robot)
+					this.imageName = "robot_runs_right";
+				else
+					this.imageName = "hero_runs_right";
 				if((control.world[this.x + 1][this.y + 1] instanceof Empty ) && this instanceof Robot){
 					if(control.world[this.x + 1][this.y] instanceof Rope){
+						this.imageName = "robot_on_rope_right";
 						this.x += 1;
 					}
 				}
-				else
+				else{
+				if(control.world[this.x + 1][this.y] instanceof Rope && this instanceof Hero){
+					this.imageName = "hero_on_rope_right";
+				}
 				this.x += 1;
 				return;
+			}
 			}
 		}
 		if(dy == -1){
@@ -217,7 +239,7 @@ return;
 
 class Robot extends ActiveActor {
 	constructor(x, y) {
-		super(x, y, "robot_runs_right");
+		super(x, y, "robot_runs_left");
 		this.dx = 1;
 		this.dy = 0;
 	  }
@@ -228,7 +250,8 @@ class Robot extends ActiveActor {
 		if( dist > 0){
 			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
 				this.hide();
-				this.imageName = "robot_runs_right";
+				this.left = false;
+				//this.imageName = "robot_runs_right";
 				this.move(1,0);
 				this.show();
 				
@@ -236,7 +259,8 @@ class Robot extends ActiveActor {
 			}
 			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist){
 				this.hide();
-				this.imageName = "robot_runs_left";
+				this.left = true;
+				//this.imageName = "robot_runs_left";
 				this.move(-1,0);
 				this.show();
 				return;
