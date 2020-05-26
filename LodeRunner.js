@@ -57,6 +57,52 @@ class ActiveActor extends Actor {
 	}
 	animation() {
 	}
+	isFalling() { // grabs gold UwU
+		if(control.world[this.x][this.y + 1] instanceof Rope || control.world[this.x][this.y + 1] instanceof Empty){
+			if(!(control.world[this.x][this.y] instanceof Rope))
+			return true;
+			else return false;
+		}
+		else return false;
+	}
+	move(dx,dy){
+		if(dx == -1){
+			if(control.world[this.x - 1][this.y] instanceof Ladder || control.world[this.x - 1][this.y] instanceof Rope || control.world[this.x - 1][this.y] instanceof Empty || control.world[this.x - 1][this.y] instanceof Gold){
+				if(( control.world[this.x - 1][this.y + 1] instanceof Empty) && this instanceof Robot){
+					if(control.world[this.x - 1][this.y] instanceof Rope){
+						this.x -= 1;
+					}
+				}
+				else
+				this.x -= 1;
+				return;
+			}
+		}
+		if(dx == 1){
+			if(control.world[this.x + 1][this.y] instanceof Ladder || control.world[this.x + 1][this.y] instanceof Rope || control.world[this.x + 1][this.y] instanceof Empty || control.world[this.x + 1][this.y] instanceof Gold){
+				if((control.world[this.x + 1][this.y + 1] instanceof Empty ) && this instanceof Robot){
+					if(control.world[this.x + 1][this.y] instanceof Rope){
+						this.x += 1;
+					}
+				}
+				else
+				this.x += 1;
+				return;
+			}
+		}
+		if(dy == -1){
+			if(control.world[this.x][this.y] instanceof Ladder){
+				this.y -= 1;
+				return;
+			}
+		}
+		if(dy == 1){
+			if(control.world[this.x][this.y + 1] instanceof Ladder || (control.world[this.x][this.y] instanceof Rope && !(control.world[this.x][this.y + 1] instanceof Brick || control.world[this.x][this.y + 1] instanceof Stone))){
+				this.y += 1;
+				return;
+			}
+		}
+	}
 }
 
 class Brick extends PassiveActor {
@@ -112,13 +158,25 @@ class Hero extends ActiveActor {
 	constructor(x, y) {
 		super(x, y, "hero_runs_left");
 	}
+
 	animation() {
 		var k = control.getKey();
+		if(this.isFalling()){
+			this.hide();
+			this.y += 1;
+			this.show();
+		}
         if( k == ' ' ) { 
 			if(this.imageName === "hero_runs_right"){
-				if(control.world[this.x +1][this.y +1] instanceof Brick && !(control.world[this.x +1][this.y] instanceof Brick) && !(control.world[this.x +1][this.y] instanceof Stone))
+				if(control.world[this.x +1][this.y +1] instanceof Brick && !(control.world[this.x +1][this.y] instanceof Brick) && !(control.world[this.x +1][this.y] instanceof Stone)){
 				control.world[this.x +1][this.y +1].hide();
+				if(!(control.world[this.x - 1][this.y] instanceof Brick)&& !(control.world[this.x - 1][this.y] instanceof Stone)&& ((control.world[this.x - 1][this.y + 1] instanceof Brick) || (control.world[this.x - 1][this.y + 1] instanceof Stone) || (control.world[this.x - 1][this.y + 1] instanceof Ladder))){
+					this.hide();
+					this.x -= 1;
+					this.show();
+				}
 				return;
+			}
 			}
 			else{
 				if(this.imageName === "hero_runs_left"){
@@ -133,17 +191,21 @@ class Hero extends ActiveActor {
 					}
 		}
 	}
+	
 return;
 }
+
+		
         if( k == null ) return;
         let [dx, dy] = k;
 		this.hide(); //esconde onde eesta
 		if(dx == -1)
-		this.imageName = "hero_runs_left";
-		else{
+			this.imageName = "hero_runs_left";
 		if(dx == 1)
 			this.imageName = "hero_runs_right";
-		}
+		this.move(dx,dy);
+		this.show();
+		return;
         this.x += dx; //move
         this.y += dy;
         this.show();//mostra new place
@@ -156,6 +218,40 @@ class Robot extends ActiveActor {
 		this.dx = 1;
 		this.dy = 0;
 	  }
+
+	animation(){
+	
+		let dist = distance(this.x, this.y, hero.x, hero.y);
+		if( dist > 0){
+			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
+				this.hide();
+				this.imageName = "robot_runs_right";
+				this.move(1,0);
+				this.show();
+				
+				return;
+			}
+			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist){
+				this.hide();
+				this.imageName = "robot_runs_left";
+				this.move(-1,0);
+				this.show();
+				return;
+			}
+			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
+				this.hide();
+				this.move(0,1);
+				this.show();
+				return;
+			}
+			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist){
+				this.hide();
+				this.move(0,-1);
+				this.show();
+				return;
+			}
+		}
+	}
 }
 
 
