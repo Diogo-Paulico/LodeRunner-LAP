@@ -40,6 +40,13 @@ class PassiveActor extends Actor {
 		control.world[this.x][this.y] = empty;
 		empty.draw(this.x, this.y);
 	}
+	isWalkable(){return false;}
+	isClimable(){return false;}
+	canBeTaken(){return false;}
+	isDestroyable(){return false;}
+	canGrabOnto(){return false;}
+	canFallThrou(){return false;}
+
 }
 
 class ActiveActor extends Actor {
@@ -75,15 +82,17 @@ class ActiveActor extends Actor {
 					this.imageName = "robot_runs_left";
 				else
 					this.imageName = "hero_runs_left";
+				this.left = true;
 	
 				if(( control.world[this.x - 1][this.y + 1] instanceof Empty) && this instanceof Robot){
 					if(control.world[this.x - 1][this.y] instanceof Rope){
 						this.imageName = "robot_on_rope_left";
 						this.x -= 1;
+						return;
 					}
 				}
 				else{
-					if(control.world[this.x + 1][this.y] instanceof Rope && this instanceof Hero){
+					if(control.world[this.x -1][this.y] instanceof Rope && this instanceof Hero){
 						this.imageName = "hero_on_rope_left";
 					}
 				
@@ -93,11 +102,12 @@ class ActiveActor extends Actor {
 		}
 		}
 		if(dx == 1){
-			if(control.world[this.x + 1][this.y] instanceof Ladder || control.world[this.x + 1][this.y] instanceof Rope || control.world[this.x + 1][this.y] instanceof Empty || control.world[this.x + 1][this.y] instanceof Gold){
+			if(control.world[this.x + 1][this.y].isWalkable() || control.world[this.x + 1][this.y] instanceof Rope || control.world[this.x + 1][this.y] instanceof Empty || control.world[this.x + 1][this.y] instanceof Gold){
 				if(this instanceof Robot)
 					this.imageName = "robot_runs_right";
 				else
 					this.imageName = "hero_runs_right";
+				this.left = false;
 				if((control.world[this.x + 1][this.y + 1] instanceof Empty ) && this instanceof Robot){
 					if(control.world[this.x + 1][this.y] instanceof Rope){
 						this.imageName = "robot_on_rope_right";
@@ -105,7 +115,7 @@ class ActiveActor extends Actor {
 					}
 				}
 				else{
-				if(control.world[this.x + 1][this.y] instanceof Rope && this instanceof Hero){
+				if(control.world[this.x + 1][this.y].canGrabOnto() && this instanceof Hero){
 					this.imageName = "hero_on_rope_right";
 				}
 				this.x += 1;
@@ -114,7 +124,7 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == -1){
-			if(control.world[this.x][this.y] instanceof Ladder){
+			if(control.world[this.x][this.y].isClimable()){
 				if(this instanceof Robot)
 					this.imageName = "robot_on_ladder_left";
 				else
@@ -124,7 +134,7 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == 1){
-			if(control.world[this.x][this.y + 1] instanceof Ladder || (control.world[this.x][this.y] instanceof Rope && !(control.world[this.x][this.y + 1] instanceof Brick || control.world[this.x][this.y + 1] instanceof Stone))){
+			if(control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y] instanceof Rope && !(control.world[this.x][this.y + 1] instanceof Brick || control.world[this.x][this.y + 1] instanceof Stone))){
 				if(this instanceof Robot)
 					this.imageName = "robot_on_ladder_left";
 				else
@@ -137,21 +147,28 @@ class ActiveActor extends Actor {
 }
 
 class Brick extends PassiveActor {
-	constructor(x, y) { super(x, y, "brick"); }
+	constructor(x, y) { super(x, y, "brick"); 
+	}
+	isDestroyable() {return true;}
+	isWalkable(){return true;}
 }
 
 class Chimney extends PassiveActor {
-	constructor(x, y) { super(x, y, "chimney"); }
+	constructor(x, y) { super(x, y, "chimney"); 
+	}
+	canFallThrou(){return true;}
 }
 
 class Empty extends PassiveActor {
 	constructor() { super(-1, -1, "empty"); }
 	show() {}
 	hide() {}
+	canFallThrou(){return true;}
 }
 
 class Gold extends PassiveActor {
 	constructor(x, y) { super(x, y, "gold"); }
+	canBeTaken(){return true;}
 }
 
 class Invalid extends PassiveActor {
@@ -165,16 +182,21 @@ class Ladder extends PassiveActor {
         makeVisible() {
             this.imageName = "ladder";
             this.show();
-        }
+		}
+		isClimable(){return true;}
+		isWalkable(){return true;}
     }
 
 
 class Rope extends PassiveActor {
 	constructor(x, y) { super(x, y, "rope"); }
+	canGrabOnto(){return true;}
+	isWalkable(){return true;}
 }
 
 class Stone extends PassiveActor {
 	constructor(x, y) { super(x, y, "stone"); }
+	isWalkable(){return true;}
 }
 
 class Hero extends ActiveActor {
@@ -186,7 +208,10 @@ class Hero extends ActiveActor {
 		var k = control.getKey();
 		if(this.isFalling()){
 			this.hide();
-			this.imageName = "hero_falls_left";
+			if(this.left)
+				this.imageName = "hero_falls_left";
+			else
+				this.imageName = "hero_falls_right";
 			this.y += 1;
 			this.show();
 			return;
@@ -224,10 +249,10 @@ return;
         if( k == null ) return;
         let [dx, dy] = k;
 		this.hide(); //esconde onde eesta
-		if(dx == -1)
+	/*	if(dx == -1)
 			this.imageName = "hero_runs_left";
 		if(dx == 1)
-			this.imageName = "hero_runs_right";
+			this.imageName = "hero_runs_right";*/
 		this.move(dx,dy);
 		this.show();
 		return;
@@ -245,7 +270,6 @@ class Robot extends ActiveActor {
 	  }
 
 	animation(){
-	
 		let dist = distance(this.x, this.y, hero.x, hero.y);
 		if( dist > 0){
 			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
@@ -328,7 +352,7 @@ class GameControl {
 			case 0: return null;
 			default: return String.fromCharCode(k);
 		// http://www.cambiaresearch.com/articles/15/javascript-char-codes-key-codes
-		};	
+		};
 	}
 	setupEvents() {
 		addEventListener("keydown", this.keyDownEvent, false);
