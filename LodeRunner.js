@@ -234,10 +234,17 @@ class Stone extends PassiveActor {
 class Hero extends ActiveActor {
 	constructor(x, y) {
 		super(x, y, "hero_runs_left");
+		this.gold = 0;
 	}
 	isFriendly(){return true;}
-
+	numberGold(){
+		return gold;
+	}
 	animation() {
+		if(control.world[this.x][this.y].canBeTaken()){
+			control.world[this.x][this.y].hide();
+			this.gold ++;
+		}
 		var k = control.getKey();
 		if(this.isFalling()){
 			this.hide();
@@ -310,25 +317,56 @@ class Robot extends ActiveActor {
 		super(x, y, "robot_runs_left");
 		this.dx = 1;
 		this.dy = 0;
-	  }
-
+		this.gold = false;
+		this.animationNumber = 0;
+	}
+	hasGold(){
+		return this.gold;
+	}
 	animation(){
+		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
+			control.world[this.x][this.y].hide();
+			this.gold = true;
+		}
 		let dist = distance(this.x, this.y, hero.x, hero.y);
+		if(this.hasGold()){
+			this.animationNumber ++;
+		}
+		
 		if( dist > 0){
-			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist || control.world[this.x + 1][this.y].canGoThrou()){
+			
+			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
 				this.left = false;
 				//this.imageName = "robot_runs_right";
+
+				if(this.animationNumber >= 56 && this.hasGold()){
+					if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
+						this.gold = false;
+						this.animationNumber = 0;
+						control.world[this.x - 1][this.y] = new Gold(this.x, this.y);
+						control.world[this.x - 1][this.y].show();
+					}
+				}
 				if(control.worldActive[this.x +1][this.y].isFriendly()){
 					this.hide();
 					this.move(1,0);
 					this.show();
 				}
+				
 				return;
 			}
-			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist  || control.world[this.x - 1][this.y].canGoThrou()){
+			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
 				
 				this.left = true;
 				//this.imageName = "robot_runs_left";
+				if(this.animationNumber >= 56 && this.hasGold()){
+					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
+						this.gold = false;
+						this.animationNumber = 0;
+						control.world[this.x + 1][this.y] = new Gold(this.x, this.y);
+						control.world[this.x + 1][this.y].show();
+					}
+				}
 				if(control.worldActive[this.x -1][this.y].isFriendly()){
 					this.hide();
 					this.move(-1,0);
@@ -336,16 +374,64 @@ class Robot extends ActiveActor {
 				}
 				return;
 			}
-			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist || control.world[this.x][this.y +1].canGoThrou()){
+			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
+				if( control.world[this.x][this.y +1].canGoThrou()){
+					if(this.animationNumber >= 56 && this.hasGold()){
+						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
+							this.gold = false;
+							this.animationNumber = 0;
+							control.world[this.x][this.y - 1] = new Gold(this.x, this.y);
+							control.world[this.x][this.y - 1].show();
+						}
+					}
+					if(control.worldActive[this.x][this.y + 1].isFriendly()){
+						this.hide();
+						this.move(0,1);
+						this.show();
+					}
+				}
+				else{
+					if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
 				
-				if(control.worldActive[this.x][this.y + 1].isFriendly()){
-					this.hide();
-					this.move(0,1);
-					this.show();
+						this.left = true;
+						//this.imageName = "robot_runs_left";
+						if(this.animationNumber >= 56 && this.hasGold()){
+							if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
+								this.gold = false;
+								this.animationNumber = 0;
+								
+								control.world[this.x + 1][this.y] = new Gold(this.x, this.y);
+								control.world[this.x + 1][this.y].show();
+							}
+						}
+						if(control.worldActive[this.x -1][this.y].isFriendly()){
+							this.hide();
+							this.move(-1,0);
+							this.show();
+						}
+					}
+					if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
+						this.left = false;
+						//this.imageName = "robot_runs_right";
+						if(this.animationNumber >= 56 && this.hasGold()){
+							if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
+								this.gold = false;
+								this.animationNumber = 0;
+								control.world[this.x - 1][this.y] = new Gold(this.x, this.y);
+								control.world[this.x - 1][this.y].show();
+							}
+						}
+						if(control.worldActive[this.x +1][this.y].isFriendly()){
+							this.hide();
+							this.move(1,0);
+							this.show();
+						}
+
+					}
 				}
 				return;
 			}
-			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist || control.world[this.x][this.y - 1].canGoThrou()){
+			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist ){
 				
 				if(control.worldActive[this.x][this.y - 1].isFriendly()){
 					this.hide();
