@@ -319,12 +319,14 @@ class Robot extends ActiveActor {
 		this.dy = 0;
 		this.gold = false;
 		this.animationNumber = 0;
+		//grabbed;
 	}
 	hasGold(){
 		return this.gold;
 	}
 	animation(){
 		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
+			//grabbed = control.world[this.x][this.y];
 			control.world[this.x][this.y].hide();
 			this.gold = true;
 		}
@@ -343,7 +345,7 @@ class Robot extends ActiveActor {
 					if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
 						this.gold = false;
 						this.animationNumber = 0;
-						control.world[this.x - 1][this.y] = new Gold(this.x, this.y);
+						control.world[this.x - 1][this.y] = new Gold(this.x - 1, this.y);
 						control.world[this.x - 1][this.y].show();
 					}
 				}
@@ -363,7 +365,7 @@ class Robot extends ActiveActor {
 					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
 						this.gold = false;
 						this.animationNumber = 0;
-						control.world[this.x + 1][this.y] = new Gold(this.x, this.y);
+						control.world[this.x + 1][this.y] = new Gold(this.x +1, this.y);
 						control.world[this.x + 1][this.y].show();
 					}
 				}
@@ -380,7 +382,7 @@ class Robot extends ActiveActor {
 						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
 							this.gold = false;
 							this.animationNumber = 0;
-							control.world[this.x][this.y - 1] = new Gold(this.x, this.y);
+							control.world[this.x][this.y - 1] = new Gold(this.x, this.y -1);
 							control.world[this.x][this.y - 1].show();
 						}
 					}
@@ -400,7 +402,7 @@ class Robot extends ActiveActor {
 								this.gold = false;
 								this.animationNumber = 0;
 								
-								control.world[this.x + 1][this.y] = new Gold(this.x, this.y);
+								control.world[this.x + 1][this.y] = new Gold(this.x + 1, this.y);
 								control.world[this.x + 1][this.y].show();
 							}
 						}
@@ -417,7 +419,7 @@ class Robot extends ActiveActor {
 							if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
 								this.gold = false;
 								this.animationNumber = 0;
-								control.world[this.x - 1][this.y] = new Gold(this.x, this.y);
+								control.world[this.x - 1][this.y] = new Gold(this.x -1, this.y);
 								control.world[this.x - 1][this.y].show();
 							}
 						}
