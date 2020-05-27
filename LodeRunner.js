@@ -195,6 +195,7 @@ class Empty extends PassiveActor {
 	hide() {}
 	canGoThrou(){return true;}
 	canFallThrou(){return true;}
+	isFriendly(){return true;}
 }
 
 class Gold extends PassiveActor {
@@ -314,33 +315,43 @@ class Robot extends ActiveActor {
 	animation(){
 		let dist = distance(this.x, this.y, hero.x, hero.y);
 		if( dist > 0){
-			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
-				this.hide();
+			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist || control.world[this.x + 1][this.y].canGoThrou()){
 				this.left = false;
 				//this.imageName = "robot_runs_right";
-				this.move(1,0);
-				this.show();
-				
+				if(control.worldActive[this.x +1][this.y].isFriendly()){
+					this.hide();
+					this.move(1,0);
+					this.show();
+				}
 				return;
 			}
-			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist){
-				this.hide();
+			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist  || control.world[this.x - 1][this.y].canGoThrou()){
+				
 				this.left = true;
 				//this.imageName = "robot_runs_left";
-				this.move(-1,0);
-				this.show();
+				if(control.worldActive[this.x -1][this.y].isFriendly()){
+					this.hide();
+					this.move(-1,0);
+					this.show();
+				}
 				return;
 			}
-			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
-				this.hide();
-				this.move(0,1);
-				this.show();
+			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist || control.world[this.x][this.y +1].canGoThrou()){
+				
+				if(control.worldActive[this.x][this.y + 1].isFriendly()){
+					this.hide();
+					this.move(0,1);
+					this.show();
+				}
 				return;
 			}
-			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist){
-				this.hide();
-				this.move(0,-1);
-				this.show();
+			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist || control.world[this.x][this.y - 1].canGoThrou()){
+				
+				if(control.worldActive[this.x][this.y - 1].isFriendly()){
+					this.hide();
+					this.move(0,-1);
+					this.show();
+				}
 				return;
 			}
 		}
