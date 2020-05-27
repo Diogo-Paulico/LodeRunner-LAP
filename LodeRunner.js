@@ -238,11 +238,11 @@ class Hero extends ActiveActor {
 			}
 			else{
 				if(this.imageName === "hero_runs_left"){
-					if(control.world[this.x - 1][this.y +1].isDestroyable && !(control.world[this.x - 1][this.y].isWalkable())){
+					if(control.world[this.x - 1][this.y +1].isDestroyable() && !(control.world[this.x - 1][this.y].isWalkable())){
 					control.world[this.x  - 1][this.y +1].hide();
 					this.hide();
 					this.x += 1;
-					if(!(control.world[this.x][this.y] instanceof Brick) && !(control.world[this.x + 1][this.y] instanceof Stone) && ((control.world[this.x + 1][this.y +1] instanceof Brick) || (control.world[this.x + 1][this.y +1] instanceof Stone) || (control.world[this.x + 1][this.y +1] instanceof Ladder))){
+					if(!(control.world[this.x][this.y].isWalkable()) &&(!this.isFalling()) && !(control.world[this.x + 1][this.y +1].canGrabOnto())){
 						this.x += 1;
 					}
 					this.x -= 1;
