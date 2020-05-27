@@ -251,9 +251,10 @@ class Hero extends ActiveActor {
 		for(let i = 0; i < this.destroyedBricks.length; i++){
 				this.destroyedBricks[i].timer++;
 				if(this.checkIfRestore(this.destroyedBricks[i])){
-				var backBrick = this.destroyedBricks.splice(i,1);
-				control.world[(backBrick.x)][(backBrick.y)] = backBrick; //backBrick.x is undefined
-				backBrick.show();
+				var bricks = this.destroyedBricks.splice(i,1);
+				var brick = bricks[0];
+				control.world[(brick.x)][(brick.y)] = brick; //backBrick.x is undefined
+				brick.show();
 				}
 			}
 		
