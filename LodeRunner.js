@@ -45,6 +45,7 @@ class PassiveActor extends Actor {
 	canBeTaken(){return false;}
 	isDestroyable(){return false;}
 	canGrabOnto(){return false;}
+	canGoThrou(){return false;}
 	canFallThrou(){return false;}
 
 }
@@ -64,11 +65,13 @@ class ActiveActor extends Actor {
 		control.worldActive[this.x][this.y] = empty;
 		control.world[this.x][this.y].draw(this.x, this.y);
 	}
+	isFriendly(){return false;}
+
 	animation() {
 	}
 	isFalling() { // grabs gold UwU
-		if(control.world[this.x][this.y + 1] instanceof Rope || control.world[this.x][this.y + 1] instanceof Empty){
-			if(!(control.world[this.x][this.y] instanceof Rope))
+		if(control.world[this.x][this.y + 1].canGrabOnto() || control.world[this.x][this.y + 1].canFallThrou()){
+			if(!(control.world[this.x][this.y].canGrabOnto()))
 			return true;
 			else return false;
 		}
@@ -77,22 +80,22 @@ class ActiveActor extends Actor {
 
 	move(dx,dy){
 		if(dx == -1){
-			if(control.world[this.x - 1][this.y] instanceof Ladder || control.world[this.x - 1][this.y] instanceof Rope || control.world[this.x - 1][this.y] instanceof Empty || control.world[this.x - 1][this.y] instanceof Gold){
+			if(control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
 				if(this instanceof Robot)
 					this.imageName = "robot_runs_left";
 				else
 					this.imageName = "hero_runs_left";
 				this.left = true;
 	
-				if(( control.world[this.x - 1][this.y + 1] instanceof Empty) && this instanceof Robot){
-					if(control.world[this.x - 1][this.y] instanceof Rope){
+				if(control.world[this.x - 1][this.y + 1].canFallThrou() && !this.isFriendly()){
+					if(control.world[this.x - 1][this.y].canGrabOnto()){
 						this.imageName = "robot_on_rope_left";
 						this.x -= 1;
 						return;
 					}
 				}
 				else{
-					if(control.world[this.x -1][this.y] instanceof Rope && this instanceof Hero){
+					if(control.world[this.x -1][this.y].canGrabOnto() && this.isFriendly()){
 						this.imageName = "hero_on_rope_left";
 					}
 				
@@ -102,20 +105,20 @@ class ActiveActor extends Actor {
 		}
 		}
 		if(dx == 1){
-			if(control.world[this.x + 1][this.y].isWalkable() || control.world[this.x + 1][this.y] instanceof Rope || control.world[this.x + 1][this.y] instanceof Empty || control.world[this.x + 1][this.y] instanceof Gold){
-				if(this instanceof Robot)
+			if(control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y] instanceof Gold){ // nao passamos por ouro mas temos que apanhar
+				if(!this.isFriendly())
 					this.imageName = "robot_runs_right";
 				else
 					this.imageName = "hero_runs_right";
 				this.left = false;
-				if((control.world[this.x + 1][this.y + 1] instanceof Empty ) && this instanceof Robot){
-					if(control.world[this.x + 1][this.y] instanceof Rope){
+				if((control.world[this.x + 1][this.y + 1].canFallThrou()) && !this.isFriendly()){
+					if(control.world[this.x + 1][this.y].canGrabOnto()){
 						this.imageName = "robot_on_rope_right";
 						this.x += 1;
 					}
 				}
 				else{
-				if(control.world[this.x + 1][this.y].canGrabOnto() && this instanceof Hero){
+				if(control.world[this.x + 1][this.y].canGrabOnto() && this.isFriendly()){
 					this.imageName = "hero_on_rope_right";
 				}
 				this.x += 1;
@@ -125,7 +128,7 @@ class ActiveActor extends Actor {
 		}
 		if(dy == -1){
 			if(control.world[this.x][this.y].isClimable()){
-				if(this instanceof Robot)
+				if(!this.isFriendly())
 					this.imageName = "robot_on_ladder_left";
 				else
 				this.imageName = "hero_on_ladder_left";
@@ -134,8 +137,8 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == 1){
-			if(control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y] instanceof Rope && !(control.world[this.x][this.y + 1] instanceof Brick || control.world[this.x][this.y + 1] instanceof Stone))){
-				if(this instanceof Robot)
+			if(control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y + 1].canGoThrou()))){
+				if(!this.isFriendly())
 					this.imageName = "robot_on_ladder_left";
 				else
 					this.imageName = "hero_on_ladder_left";
@@ -155,14 +158,16 @@ class Brick extends PassiveActor {
 
 class Chimney extends PassiveActor {
 	constructor(x, y) { super(x, y, "chimney"); 
-	}
+}
 	canFallThrou(){return true;}
+	canGoThrou(){return true;}
 }
 
 class Empty extends PassiveActor {
 	constructor() { super(-1, -1, "empty"); }
 	show() {}
 	hide() {}
+	canGoThrou(){return true;}
 	canFallThrou(){return true;}
 }
 
@@ -184,14 +189,14 @@ class Ladder extends PassiveActor {
             this.show();
 		}
 		isClimable(){return true;}
-		isWalkable(){return true;}
+		canGoThrou(){return true;}
     }
 
 
 class Rope extends PassiveActor {
 	constructor(x, y) { super(x, y, "rope"); }
 	canGrabOnto(){return true;}
-	isWalkable(){return true;}
+	canGoThrou(){return true;}
 }
 
 class Stone extends PassiveActor {
@@ -203,6 +208,7 @@ class Hero extends ActiveActor {
 	constructor(x, y) {
 		super(x, y, "hero_runs_left");
 	}
+	isFriendly(){return true;}
 
 	animation() {
 		var k = control.getKey();
@@ -218,13 +224,15 @@ class Hero extends ActiveActor {
 		}
         if( k == ' ' ) { 
 			if(this.imageName === "hero_runs_right"){
-				if(control.world[this.x +1][this.y +1] instanceof Brick && !(control.world[this.x +1][this.y] instanceof Brick) && !(control.world[this.x +1][this.y] instanceof Stone)){
+				if(control.world[this.x +1][this.y +1].isDestroyable() && !(control.world[this.x +1][this.y].isWalkable())){
 				control.world[this.x +1][this.y +1].hide();
-				if(!(control.world[this.x - 1][this.y] instanceof Brick)&& !(control.world[this.x - 1][this.y] instanceof Stone)&& ((control.world[this.x - 1][this.y + 1] instanceof Brick) || (control.world[this.x - 1][this.y + 1] instanceof Stone) || (control.world[this.x - 1][this.y + 1] instanceof Ladder))){
-					this.hide();
+				this.hide();
+				this.x -= 1;
+				if(!(control.world[this.x][this.y].isWalkable()) && (!this.isFalling()) && !control.world[this.x][this.y].canGrabOnto()){
 					this.x -= 1;
-					this.show();
 				}
+				this.x +=1;
+				this.show();
 				return;
 			}
 			}
