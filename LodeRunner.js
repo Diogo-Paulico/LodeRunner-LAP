@@ -176,7 +176,10 @@ class ActiveActor extends Actor {
 }
 
 class Brick extends PassiveActor {
-	constructor(x, y) { super(x, y, "brick"); 
+	constructor(x, y) { 
+		super(x, y, "brick"); 
+		this.destroyed = false;
+		this.timer = 0;
 	}
 	isDestroyable() {return true;}
 	isWalkable(){return true;}
@@ -235,12 +238,26 @@ class Hero extends ActiveActor {
 	constructor(x, y) {
 		super(x, y, "hero_runs_left");
 		this.gold = 0;
+		this.destroyedBricks = [];
 	}
 	isFriendly(){return true;}
 	numberGold(){
 		return gold;
 	}
-	animation() {
+	checkIfRestore(brick){
+		return  brick.timer >= 5 * ANIMATION_EVENTS_PER_SECOND;
+	}
+	animation() {	
+		for(let i = 0; i < this.destroyedBricks.length; i++){
+				this.destroyedBricks[i].timer++;
+				if(this.checkIfRestore(this.destroyedBricks[i])){
+				var backBrick = this.destroyedBricks.splice(i,1);
+				control.world[(backBrick.x)][(backBrick.y)] = backBrick; //backBrick.x is undefined
+				backBrick.show();
+				}
+			}
+		
+
 		if(control.world[this.x][this.y].canBeTaken()){
 			control.world[this.x][this.y].hide();
 			this.gold ++;
@@ -259,7 +276,11 @@ class Hero extends ActiveActor {
         if( k == ' ' ) { 
 			if(this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right"){
 				if(control.world[this.x + 1][this.y +1].isDestroyable() && !(control.world[this.x + 1][this.y].isWalkable())){
-				control.world[this.x + 1][this.y + 1].hide();
+				let brick = control.world[this.x + 1][this.y + 1]; 	
+				brick.destroyed = true;
+				brick.timer = 0;
+				this.destroyedBricks.push(brick);
+				brick.hide();
 				this.imageName = "hero_shoots_right";
 				if(control.insideWorld(this.x -1, this.y)){
 				this.hide();
@@ -277,9 +298,13 @@ class Hero extends ActiveActor {
 				if(this.imageName === "hero_runs_left" ||this.imageName === "hero_shoots_left"){
 					if(control.world[this.x - 1][this.y +1].isDestroyable() && !(control.world[this.x - 1][this.y].isWalkable())){
 						this.imageName = "hero_shoots_left";
-					control.world[this.x  - 1][this.y +1].hide();
+						let brick = control.world[this.x  - 1][this.y +1]; 	
+						brick.destroyed = true;
+						brick.timer = 0;
+						this.destroyedBricks.push(brick);
+						brick.hide();
 					if(control.insideWorld(this.x +1, this.y)){
-					this.hide();
+						this.hide();
 					this.x += 1;
 					if(!(control.world[this.x][this.y].isWalkable()) &&(!this.isFalling()) && !(control.world[this.x][this.y].canGrabOnto())){
 						this.x += 1;
