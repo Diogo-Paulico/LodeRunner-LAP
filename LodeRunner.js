@@ -79,6 +79,7 @@ class ActiveActor extends Actor {
 	}
 
 	move(dx,dy){
+		if(control.insideWorld(this.x + dx, this.y + dy)){
 		if(dx == -1){
 			if(control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
 				if(this instanceof Robot)
@@ -128,25 +129,50 @@ class ActiveActor extends Actor {
 		}
 		if(dy == -1){
 			if(control.world[this.x][this.y].isClimable()){
-				if(!this.isFriendly())
+				if(!this.isFriendly()){
+					if(this.left){
 					this.imageName = "robot_on_ladder_left";
-				else
-				this.imageName = "hero_on_ladder_left";
+					this.left = false;
+				}
+					else{
+					this.imageName = "robot_on_ladder_right";
+					this.left = true;}
+
+				}
+				else{
+					if(this.left){
+					this.imageName = "hero_on_ladder_left";
+					this.left = false;
+				}
+					else{
+					this.imageName = "hero_on_ladder_right";
+					this.left = true;}
+				}
 				this.y -= 1;
 				return;
 			}
 		}
 		if(dy == 1){
 			if(control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y + 1].canGoThrou()))){
-				if(!this.isFriendly())
+				if(!this.isFriendly()){
+					if(this.left){
 					this.imageName = "robot_on_ladder_left";
+					this.left = false;
+				}
+					else{
+					this.imageName = "robot_on_ladder_right";
+					this.left = true;}
+
+				}
 				else
 					this.imageName = "hero_on_ladder_left";
+				
 				this.y += 1;
 				return;
 			}
 		}
 	}
+}
 }
 
 class Brick extends PassiveActor {
@@ -223,9 +249,11 @@ class Hero extends ActiveActor {
 			return;
 		}
         if( k == ' ' ) { 
-			if(this.imageName === "hero_runs_right"){
+			if(this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right"){
 				if(control.world[this.x + 1][this.y +1].isDestroyable() && !(control.world[this.x + 1][this.y].isWalkable())){
 				control.world[this.x + 1][this.y + 1].hide();
+				this.imageName = "hero_shoots_right";
+				if(control.insideWorld(this.x -1, this.y)){
 				this.hide();
 				this.x -= 1;
 				if(!(control.world[this.x][this.y].isWalkable()) && (!this.isFalling()) && !control.world[this.x][this.y].canGrabOnto()){
@@ -233,22 +261,26 @@ class Hero extends ActiveActor {
 				}
 				this.x +=1;
 				this.show();
+			}
 				return;
 			}
 			}
 			else{
-				if(this.imageName === "hero_runs_left"){
+				if(this.imageName === "hero_runs_left" ||this.imageName === "hero_shoots_left"){
 					if(control.world[this.x - 1][this.y +1].isDestroyable() && !(control.world[this.x - 1][this.y].isWalkable())){
+						this.imageName = "hero_shoots_left";
 					control.world[this.x  - 1][this.y +1].hide();
+					if(control.insideWorld(this.x +1, this.y)){
 					this.hide();
 					this.x += 1;
-					if(!(control.world[this.x][this.y].isWalkable()) &&(!this.isFalling()) && !(control.world[this.x + 1][this.y +1].canGrabOnto())){
+					if(!(control.world[this.x][this.y].isWalkable()) &&(!this.isFalling()) && !(control.world[this.x][this.y].canGrabOnto())){
 						this.x += 1;
 					}
 					this.x -= 1;
 					this.show();
 					return;
 					}
+				}
 		}
 	}
 	
@@ -351,6 +383,13 @@ class GameControl {
 				GameFactory.actorFromCode(map[y][x], x, y);
 			}
 	}
+	insideWorld(x,y){
+		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
+			return true;
+		else
+			return false;
+	}
+
 	getKey() {
 		let k = control.key;
 		control.key = 0;
