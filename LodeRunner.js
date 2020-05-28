@@ -274,8 +274,9 @@ class Hero extends ActiveActor {
 	}
 
 	animation() {
-		if(control.isLevelDone(this.gold)){			
+		if(control.isLevelDone(this.gold) && this.y == 0){
 			control.OutOfLevelDone(this.x,this.y);
+			return;
 		}
 		
 		
@@ -429,7 +430,7 @@ class Robot extends ActiveActor {
 					this.left = false;
 					//this.imageName = "robot_runs_right";
 					if(this.animationNumber >= 56 && this.hasGold()){
-						if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
+						if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
 							this.returnGold(this.x -1, this.y);
 						}
 					}
@@ -455,7 +456,7 @@ class Robot extends ActiveActor {
 				this.left = true;
 				//this.imageName = "robot_runs_left";
 				if(this.animationNumber >= 56 && this.hasGold()){
-					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
+					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x +1][this.y].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
 						this.returnGold(this.x+1, this.y);
 					}
 				}
@@ -477,7 +478,7 @@ class Robot extends ActiveActor {
 			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
 				//if( control.world[this.x][this.y +1].canGoThrou()){
 					if(this.animationNumber >= 56 && this.hasGold()){
-						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){	
+						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){	
 							this.returnGold(this.x+1, this.y);
 					}
 				}
@@ -578,7 +579,7 @@ class GameControl {
 				}
 				GameFactory.actorFromCode(map[y][x], x, y);
 			}
-			//alert(this.totalGold);
+			alert(this.totalGold);
 	}
 	insideWorld(x,y){
 		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
@@ -612,18 +613,18 @@ class GameControl {
 	}
 
 	loadNextLevel(){
+		this.totalGold = 0;
 		this.levelNum++;
 		this.levelCompleted = false;
-		this.totalGold = 0;
 		this.clearLevel();
 		this.loadLevel(this.levelNum);
-		control = this;
+		
 	}
 		
 	OutOfLevelDone(x,y){
 		if(y <=0 && this.world[x][y].isClimable() && this.levelCompleted){
-			hero = null;
 			this.worldActive[x][y].hide();
+			hero = null;
 			this.loadNextLevel();
 		}
 	}
