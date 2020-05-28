@@ -301,7 +301,7 @@ class Hero extends ActiveActor {
 		if(control.world[this.x][this.y].canBeTaken()){
 			control.world[this.x][this.y].hide();
 			this.gold ++;
-			alert(this.gold);
+		//	alert(this.gold);
 		}
 		var k = control.getKey();
 		if(this.isFalling()){
@@ -553,7 +553,7 @@ class GameControl {
 		empty = new Empty();	// only one empty actor needed
 		this.world = this.createMatrix();
 		this.worldActive = this.createMatrix();
-		this.loadLevel(2);
+		this.loadLevel(1);
 		this.setupEvents();
 	}
 	createMatrix() { // stored by columns
@@ -578,7 +578,7 @@ class GameControl {
 				}
 				GameFactory.actorFromCode(map[y][x], x, y);
 			}
-			alert(this.totalGold);
+			//alert(this.totalGold);
 	}
 	insideWorld(x,y){
 		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
@@ -602,13 +602,30 @@ class GameControl {
 				}
 			}
 	}
-	OutOfLevelDone(x,y){
-		if(y <=0 && this.world[x][y+1].isClimable() && this.levelCompleted){
-			this.levelNum++;
-			this.worldActive[x][y] = empty;
-			this.loadLevel(this.levelNum);
-		}
 
+	clearLevel(){
+		for(let x=0 ; x < WORLD_WIDTH ; x++)
+			for(let y=0 ; y < WORLD_HEIGHT ; y++) {
+				this.world[x][y].hide();
+				this.worldActive[x][y].hide();
+			}
+	}
+
+	loadNextLevel(){
+		this.levelNum++;
+		this.levelCompleted = false;
+		this.totalGold = 0;
+		this.clearLevel();
+		this.loadLevel(this.levelNum);
+		control = this;
+	}
+		
+	OutOfLevelDone(x,y){
+		if(y <=0 && this.world[x][y].isClimable() && this.levelCompleted){
+			hero = null;
+			this.worldActive[x][y].hide();
+			this.loadNextLevel();
+		}
 	}
 
 	getKey() {
