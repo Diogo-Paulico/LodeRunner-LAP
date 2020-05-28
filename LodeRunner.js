@@ -66,17 +66,21 @@ class ActiveActor extends Actor {
 		control.world[this.x][this.y].draw(this.x, this.y);
 	}
 	isFriendly(){return false;}
+	isCharacter(){return true;}
 
 	animation() {
 	}
 	isFalling() { // grabs gold UwU
-		if(control.world[this.x][this.y + 1].canGrabOnto() || control.world[this.x][this.y + 1].canFallThrou()){
+		if(control.insideWorld(this.x,this.y + 1)){
+		if(control.world[this.x][this.y + 1].canGrabOnto() || control.world[this.x][this.y + 1].canFallThrou() || control.world[this.x][this.y + 1].canBeTaken()){
 			if(!(control.world[this.x][this.y].canGrabOnto()))
 			return true;
 			else return false;
 		}
 		else return false;
-	}
+	}else
+		return false;
+}
 
 	move(dx,dy){
 		if(control.insideWorld(this.x + dx, this.y + dy)){
@@ -84,10 +88,14 @@ class ActiveActor extends Actor {
 			if(control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
 				if(this instanceof Robot)
 					this.imageName = "robot_runs_left";
-				else
+				else{
 					this.imageName = "hero_runs_left";
+					if(!this.left){
+						this.left = true;
+						return;
+					}
+				}
 				this.left = true;
-	
 				if(control.world[this.x - 1][this.y + 1].canFallThrou() && !this.isFriendly()){
 					if(control.world[this.x - 1][this.y].canGrabOnto()){
 						this.imageName = "robot_on_rope_left";
@@ -109,8 +117,13 @@ class ActiveActor extends Actor {
 			if(control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y] instanceof Gold){ // nao passamos por ouro mas temos que apanhar
 				if(!this.isFriendly())
 					this.imageName = "robot_runs_right";
-				else
+				else{
 					this.imageName = "hero_runs_right";
+					if(this.left){
+						this.left = false;
+						return;
+					}
+				}
 				this.left = false;
 				if((control.world[this.x + 1][this.y + 1].canFallThrou()) && !this.isFriendly()){
 					if(control.world[this.x + 1][this.y].canGrabOnto()){
@@ -218,7 +231,8 @@ class Ladder extends PassiveActor {
             this.imageName = "ladder";
             this.show();
 		}
-		isClimable(){return true;}
+		isClimable(){
+			if(this.imageName === "ladder")return true; else return false;}
 		canGoThrou(){return true;}
     }
 
@@ -247,6 +261,18 @@ class Hero extends ActiveActor {
 	checkIfRestore(brick){
 		return  brick.timer >= 5 * ANIMATION_EVENTS_PER_SECOND;
 	}
+	isInHole(dx,dy){
+		let found = false;
+		for(let i = 0; i< this.destroyedBricks.length; i++){
+			found = (this.destroyedBricks[i].x == dx && this.destroyedBricks[i].y == dy);
+			if(found){
+				let brick =this.destroyedBricks[i];
+				control.world[brick.x][brick.y] = brick;
+				return true;}
+		}
+		return false;
+	}
+
 	animation() {	
 		for(let i = 0; i < this.destroyedBricks.length; i++){
 				this.destroyedBricks[i].timer++;
@@ -255,6 +281,12 @@ class Hero extends ActiveActor {
 				var brick = bricks[0];
 				control.world[(brick.x)][(brick.y)] = brick; //backBrick.x is undefined
 				brick.show();
+				if(control.worldActive[brick.x][brick.y] != empty && !control.worldActive[brick.x][brick.y].isFriendly()){
+					let pers = control.worldActive[brick.x][brick.y];
+					pers.hide();
+					pers.y -= 1;
+					pers.show();
+				}
 				}
 			}
 		
@@ -350,6 +382,13 @@ class Robot extends ActiveActor {
 	hasGold(){
 		return this.gold;
 	}
+	returnGold(x,y){
+		this.gold = false;
+		this.animationNumber = 0;
+		control.world[x][y] = new Gold(x,y);
+		control.world[x][y].show();
+	}
+	
 	animation(){
 		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
 			//grabbed = control.world[this.x][this.y];
@@ -361,75 +400,96 @@ class Robot extends ActiveActor {
 			this.animationNumber ++;
 		}
 		
+		if( this.time % 2 == 0 )
+        	return;
+		
 		if( dist > 0){
-			
-			if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
-				this.left = false;
-				//this.imageName = "robot_runs_right";
-
-				if(this.animationNumber >= 56 && this.hasGold()){
-					if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
-						this.gold = false;
-						this.animationNumber = 0;
-						control.world[this.x - 1][this.y] = new Gold(this.x - 1, this.y);
-						control.world[this.x - 1][this.y].show();
-					}
-				}
-				if(control.worldActive[this.x +1][this.y].isFriendly()){
-					this.hide();
-					this.move(1,0);
-					this.show();
-				}
-				
+			if(this.isFalling() && !hero.isInHole(this.x,this.y)){
+				this.hide();
+				if(this.left)
+					this.imageName = "robot_falls_left";
+				else
+					this.imageName = "robot_falls_right";
+				this.y += 1;
+				this.show();
 				return;
 			}
+				if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
+					this.left = false;
+					//this.imageName = "robot_runs_right";
+					if(this.animationNumber >= 56 && this.hasGold()){
+						if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
+							this.returnGold(this.x -1, this.y);
+						}
+					}
+					if(control.worldActive[this.x +1][this.y].isFriendly()){
+						this.hide();
+						if(hero.isInHole(this.x+1,this.y+1)){
+							if(this.hasGold()){
+								this.returnGold(this.x+1,this.y);
+							}
+							this.x +=1;
+							this.y+=1;
+						}
+						else{
+						this.move(1,0);
+						}
+						this.show();
+					}
+					return;
+				}
+			
 			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
 				
 				this.left = true;
 				//this.imageName = "robot_runs_left";
 				if(this.animationNumber >= 56 && this.hasGold()){
 					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
-						this.gold = false;
-						this.animationNumber = 0;
-						control.world[this.x + 1][this.y] = new Gold(this.x +1, this.y);
-						control.world[this.x + 1][this.y].show();
+						this.returnGold(this.x+1, this.y);
 					}
 				}
 				if(control.worldActive[this.x -1][this.y].isFriendly()){
 					this.hide();
+					if(hero.isInHole(this.x-1,this.y+1)){
+						if(this.hasGold()){
+							this.returnGold(this.x-1,this.y);
+						}
+						this.x -=1;
+						this.y+=1;
+					}else{
 					this.move(-1,0);
+					}
 					this.show();
 				}
 				return;
 			}
 			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
-				if( control.world[this.x][this.y +1].canGoThrou()){
+				//if( control.world[this.x][this.y +1].canGoThrou()){
 					if(this.animationNumber >= 56 && this.hasGold()){
-						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
-							this.gold = false;
-							this.animationNumber = 0;
-							control.world[this.x][this.y - 1] = new Gold(this.x, this.y -1);
-							control.world[this.x][this.y - 1].show();
-						}
+						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){	
+							this.returnGold(this.x+1, this.y);
 					}
+				}
 					if(control.worldActive[this.x][this.y + 1].isFriendly()){
 						this.hide();
 						this.move(0,1);
 						this.show();
 					}
 				}
-				else{
+			return;
+			}
+
+			
+			
+			/*	else{
 					if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
 				
 						this.left = true;
 						//this.imageName = "robot_runs_left";
 						if(this.animationNumber >= 56 && this.hasGold()){
 							if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
-								this.gold = false;
-								this.animationNumber = 0;
+								this.returnGold(this.x +1, this.y);
 								
-								control.world[this.x + 1][this.y] = new Gold(this.x + 1, this.y);
-								control.world[this.x + 1][this.y].show();
 							}
 						}
 						if(control.worldActive[this.x -1][this.y].isFriendly()){
@@ -443,10 +503,7 @@ class Robot extends ActiveActor {
 						//this.imageName = "robot_runs_right";
 						if(this.animationNumber >= 56 && this.hasGold()){
 							if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
-								this.gold = false;
-								this.animationNumber = 0;
-								control.world[this.x - 1][this.y] = new Gold(this.x -1, this.y);
-								control.world[this.x - 1][this.y].show();
+								this.returnGold(this.x -1, this.y);
 							}
 						}
 						if(control.worldActive[this.x +1][this.y].isFriendly()){
@@ -455,10 +512,8 @@ class Robot extends ActiveActor {
 							this.show();
 						}
 
-					}
-				}
-				return;
-			}
+			*/
+
 			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist ){
 				
 				if(control.worldActive[this.x][this.y - 1].isFriendly()){
@@ -470,7 +525,6 @@ class Robot extends ActiveActor {
 			}
 		}
 	}
-}
 
 
 
