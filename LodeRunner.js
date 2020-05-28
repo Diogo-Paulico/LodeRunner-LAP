@@ -256,7 +256,7 @@ class Hero extends ActiveActor {
 	}
 	isFriendly(){return true;}
 	numberGold(){
-		return gold;
+		return this.gold;
 	}
 	checkIfRestore(brick){
 		return  brick.timer >= 5 * ANIMATION_EVENTS_PER_SECOND;
@@ -273,10 +273,16 @@ class Hero extends ActiveActor {
 		return false;
 	}
 
-	animation() {	
+	animation() {
+		if(control.isLevelDone(this.gold)){			
+			control.OutOfLevelDone(this.x,this.y);
+		}
+		
+		
 		for(let i = 0; i < this.destroyedBricks.length; i++){
 				this.destroyedBricks[i].timer++;
 				if(this.checkIfRestore(this.destroyedBricks[i])){
+				if(control.worldActive[this.destroyedBricks[i].x][this.destroyedBricks[i].y-1] == empty){
 				var bricks = this.destroyedBricks.splice(i,1);
 				var brick = bricks[0];
 				control.world[(brick.x)][(brick.y)] = brick; //backBrick.x is undefined
@@ -289,11 +295,13 @@ class Hero extends ActiveActor {
 				}
 				}
 			}
+			}
 		
 
 		if(control.world[this.x][this.y].canBeTaken()){
 			control.world[this.x][this.y].hide();
 			this.gold ++;
+			alert(this.gold);
 		}
 		var k = control.getKey();
 		if(this.isFalling()){
@@ -404,7 +412,10 @@ class Robot extends ActiveActor {
         	return;
 		
 		if( dist > 0){
-			if(this.isFalling() && !hero.isInHole(this.x,this.y)){
+			if(hero.isInHole(this.x,this.y))
+				return;
+
+			if(this.isFalling() && !hero.isInHole(this.x,this.y) && control.worldActive[this.x][this.y+1].isFriendly()){
 				this.hide();
 				if(this.left)
 					this.imageName = "robot_falls_left";
@@ -535,11 +546,14 @@ class GameControl {
 		control = this;
 		this.key = 0;
 		this.time = 0;
+		this.totalGold = 0;
+		this.levelCompleted = false;
+		this.levelNum = 1;
 		this.ctx = document.getElementById("canvas1").getContext("2d");
 		empty = new Empty();	// only one empty actor needed
 		this.world = this.createMatrix();
 		this.worldActive = this.createMatrix();
-		this.loadLevel(1);
+		this.loadLevel(2);
 		this.setupEvents();
 	}
 	createMatrix() { // stored by columns
@@ -559,14 +573,42 @@ class GameControl {
         for(let x=0 ; x < WORLD_WIDTH ; x++)
             for(let y=0 ; y < WORLD_HEIGHT ; y++) {
 					// x/y reversed because map stored by lines
+				if(map[y][x] === "o"){
+					this.totalGold++;
+				}
 				GameFactory.actorFromCode(map[y][x], x, y);
 			}
+			alert(this.totalGold);
 	}
 	insideWorld(x,y){
 		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
 			return true;
 		else
 			return false;
+	}
+	isLevelDone(ngold){
+		if(this.totalGold == ngold){
+			this.showExit();
+			this.levelCompleted = true;
+			return true;
+		}
+	}
+
+	showExit(){
+		for(let x=0 ; x < WORLD_WIDTH ; x++)
+			for(let y=0 ; y < WORLD_HEIGHT ; y++) {
+				if (this.world[x][y] instanceof Ladder && !this.world[x][y].isClimable()){
+					this.world[x][y].makeVisible();
+				}
+			}
+	}
+	OutOfLevelDone(x,y){
+		if(y <=0 && this.world[x][y+1].isClimable() && this.levelCompleted){
+			this.levelNum++;
+			this.worldActive[x][y] = empty;
+			this.loadLevel(this.levelNum);
+		}
+
 	}
 
 	getKey() {
