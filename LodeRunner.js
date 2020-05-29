@@ -436,7 +436,7 @@ class Robot extends ActiveActor {
 					}
 					if(control.worldActive[this.x +1][this.y].isFriendly()){
 						this.hide();
-						if(hero.isInHole(this.x+1,this.y+1) && !control.world[this.x +1][this.y+1].isWalkable()){
+						if(!control.world[this.x +1][this.y+1].isWalkable() && hero.isInHole(this.x+1,this.y+1)){
 							if(this.hasGold()){
 								this.returnGold(this.x+1,this.y);
 							}
@@ -462,7 +462,7 @@ class Robot extends ActiveActor {
 				}
 				if(control.worldActive[this.x -1][this.y].isFriendly()){
 					this.hide();
-					if(hero.isInHole(this.x-1,this.y+1) && !control.world[this.x -1][this.y+1].isWalkable()){
+					if(!control.world[this.x -1][this.y+1].isWalkable() && hero.isInHole(this.x-1,this.y+1)){
 						if(this.hasGold()){
 							this.returnGold(this.x-1,this.y);
 						}
