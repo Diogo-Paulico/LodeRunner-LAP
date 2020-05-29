@@ -272,9 +272,16 @@ class Hero extends ActiveActor {
 		}
 		return false;
 	}
-
+	surrounded(){
+		if(control.insideWorld(this.x + 1,this.y) && control.insideWorld(this.x - 1, this.y)){
+			if(control.world[this.x + 1][this.y].isWalkable() && control.world[this.x - 1][this.y].isWalkable() && control.world[this.x][this.y + 1].isWalkable()){
+				return true;
+			}
+		}
+		return false;
+	}
 	animation() {
-		if( this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y)){
+		if(( (this.y == (WORLD_HEIGHT - 1))|| (this.surrounded())) && this.isInHole(this.x,this.y) ){
 			control.resetLevel();
 			return;
 		}
@@ -374,9 +381,11 @@ return;
 			this.imageName = "hero_runs_left";
 		if(dx == 1)
 			this.imageName = "hero_runs_right";*/
+		if(control.insideWorld(this.x + dx,this.y + dy)){
 		if(control.worldActive[this.x + dx][this.y + dy] != empty && !control.worldActive[this.x + dx][this.y + dy].isFriendly() && !control.world[this.x + dx][this.y + dy].isWalkable()){
 			control.resetLevel();
 			return;
+		}
 		}
 		this.move(dx,dy);
 		this.show();
