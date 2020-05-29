@@ -549,12 +549,12 @@ class GameControl {
 		this.time = 0;
 		this.totalGold = 0;
 		this.levelCompleted = false;
-		this.levelNum = 3;
+		this.levelNum = 1;
 		this.ctx = document.getElementById("canvas1").getContext("2d");
 		empty = new Empty();	// only one empty actor needed
 		this.world = this.createMatrix();
 		this.worldActive = this.createMatrix();
-		this.loadLevel(3);
+		this.loadLevel(1);
 		this.setupEvents();
 	}
 	createMatrix() { // stored by columns
