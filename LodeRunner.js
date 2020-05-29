@@ -374,7 +374,7 @@ return;
 			this.imageName = "hero_runs_left";
 		if(dx == 1)
 			this.imageName = "hero_runs_right";*/
-		if(control.worldActive[this.x + dx][this.y + dy] != empty && !control.worldActive[this.x + dx][this.y + dy].isFriendly()){
+		if(control.worldActive[this.x + dx][this.y + dy] != empty && !control.worldActive[this.x + dx][this.y + dy].isFriendly() && !control.world[this.x + dx][this.y + dy].isWalkable()){
 			control.resetLevel();
 			return;
 		}
