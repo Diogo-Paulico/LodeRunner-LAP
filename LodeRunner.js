@@ -141,7 +141,7 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == -1){
-			if(control.world[this.x][this.y].isClimable()){
+			if(control.world[this.x][this.y].isClimable() && control.world[this.x][this.y -1].canGoThrou()){
 				if(!this.isFriendly()){
 					if(this.left){
 					this.imageName = "robot_on_ladder_left";
@@ -281,6 +281,7 @@ class Hero extends ActiveActor {
 		return false;
 	}
 	animation() {
+		
 		if(( (this.y == (WORLD_HEIGHT - 1))|| (this.surrounded())) && this.isInHole(this.x,this.y) ){
 			control.resetLevel();
 			return;
@@ -316,6 +317,8 @@ class Hero extends ActiveActor {
 		//	alert(this.gold);
 		}
 		var k = control.getKey();
+		
+		
 		if(this.isFalling()){
 			this.hide();
 			if(this.left)
@@ -374,8 +377,8 @@ return;
 }
 
 		
-        if( k == null ) return;
-        let [dx, dy] = k;
+		if( k == null ) return;
+		let [dx, dy] = k;
 		this.hide(); //esconde onde eesta
 	/*	if(dx == -1)
 			this.imageName = "hero_runs_left";
@@ -389,6 +392,7 @@ return;
 		}
 		this.move(dx,dy);
 		this.show();
+		document.getElementById('text1').value = this.gold;
 		return;
         this.x += dx; //move
         this.y += dy;
@@ -601,6 +605,9 @@ class GameControl {
 				}
 				GameFactory.actorFromCode(map[y][x], x, y);
 			}
+			document.getElementById('text2').value = this.totalGold;
+			document.getElementById('text3').value = this.levelNum;
+			document.getElementById('text4').value = MAPS.length;
 			alert(this.totalGold);
 	}
 	insideWorld(x,y){
@@ -646,6 +653,13 @@ class GameControl {
 		this.clearLevel();
 		this.loadLevel(this.levelNum);
 		
+	}
+	loadCustomLevel(level){
+		this.totalGold = 0;
+		this.levelNum = level;
+		this.levelCompleted = false;
+		this.clearLevel();
+		this.loadLevel(level);
 	}
 		
 	OutOfLevelDone(x,y){
@@ -698,17 +712,35 @@ class GameControl {
 function onLoad() {
   // Asynchronously load the images an then run the game
 	GameImages.loadAll(function() { new GameControl(); });
+	let myList = document.getElementById("list");
+	let selectList = document.createElement("select");
+	selectList.setAttribute("id", "mySelect");
+	myList.appendChild(selectList);
+	for(let i = 1; i <=MAPS.length; i++){
+		let option = document.createElement("option");
+		option.setAttribute("value", i);
+		option.text = i;
+		selectList.appendChild(option);
+	}
 }
 
 let audio = null;
 function b1() { 
-	if( audio == null )
+	/*if( audio == null )
         audio = new Audio("http://home.jumpman.fr/partage/smash/Individual%20tracks%20%28aac%29/24-04%20Sonic%20Boom%20%5BSonic%20CD%5D.m4a");
     audio.loop = true;
-    audio.play();  // requires a previous user interaction with the page
+	audio.play(); */ // requires a previous user interaction with the page
+	control.levelNum--;
+	control.loadNextLevel();
  }
 
-function b2() {audio.pause(); }
+function b2() {//audio.pause(); 
+	var e = document.getElementById("mySelect");
+	var value = e.options[e.selectedIndex].value;
+	control.loadCustomLevel(value);
+	
+
+}
 
 
 
