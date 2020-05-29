@@ -399,6 +399,10 @@ class Robot extends ActiveActor {
 	}
 	
 	animation(){
+		if(hero.x == this.x && hero.y == this.y){
+			control.resetLevel();
+		}
+
 		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
 			//grabbed = control.world[this.x][this.y];
 			control.world[this.x][this.y].hide();
@@ -593,6 +597,11 @@ class GameControl {
 			this.levelCompleted = true;
 			return true;
 		}
+	}
+	resetLevel(){
+		alert("you loose brah.")
+		this.levelNum--;
+		this.loadNextLevel();
 	}
 
 	showExit(){
