@@ -274,11 +274,15 @@ class Hero extends ActiveActor {
 	}
 
 	animation() {
+		if(this.isInHole(this.x,this.y)){
+			control.resetLevel();
+			return;
+		}
+
 		if(control.isLevelDone(this.gold) && this.y == 0){
 			control.OutOfLevelDone(this.x,this.y);
 			return;
 		}
-		
 		
 		for(let i = 0; i < this.destroyedBricks.length; i++){
 				this.destroyedBricks[i].timer++;
