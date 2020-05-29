@@ -274,7 +274,7 @@ class Hero extends ActiveActor {
 	}
 
 	animation() {
-		if( y == WORLD_HEIGHT -1 && this.isInHole(this.x,this.y)){
+		if( this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y)){
 			control.resetLevel();
 			return;
 		}
