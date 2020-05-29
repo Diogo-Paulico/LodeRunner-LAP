@@ -73,7 +73,7 @@ class ActiveActor extends Actor {
 	isFalling() { // grabs gold UwU
 		if(control.insideWorld(this.x,this.y + 1)){
 		if(control.world[this.x][this.y + 1].canGrabOnto() || control.world[this.x][this.y + 1].canFallThrou() || control.world[this.x][this.y + 1].canBeTaken()){
-			if(!(control.world[this.x][this.y].canGrabOnto()))
+			if(!(control.world[this.x][this.y].canGrabOnto()) && !(control.world[this.x][this.y].isClimable()))
 			return true;
 			else return false;
 		}
@@ -374,6 +374,10 @@ return;
 			this.imageName = "hero_runs_left";
 		if(dx == 1)
 			this.imageName = "hero_runs_right";*/
+		if(control.worldActive[this.x + dx][this.y + dy] != empty && !control.worldActive[this.x + dx][this.y + dy].isFriendly()){
+			control.resetLevel();
+			return;
+		}
 		this.move(dx,dy);
 		this.show();
 		return;
@@ -405,6 +409,7 @@ class Robot extends ActiveActor {
 	animation(){
 		if(hero.x == this.x && hero.y == this.y){
 			control.resetLevel();
+			return;
 		}
 
 		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
