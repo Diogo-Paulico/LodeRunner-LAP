@@ -85,7 +85,7 @@ class ActiveActor extends Actor {
 	move(dx,dy){
 		if(control.insideWorld(this.x + dx, this.y + dy)){
 		if(dx == -1){
-			if(control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
+			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
 				if(this instanceof Robot)
 					this.imageName = "robot_runs_left";
 				else{
@@ -96,6 +96,7 @@ class ActiveActor extends Actor {
 					}
 				}
 				this.left = true;
+				if(this.y != (WORLD_HEIGHT -1)){
 				if(control.world[this.x - 1][this.y + 1].canFallThrou() && !this.isFriendly()){
 					if(control.world[this.x - 1][this.y].canGrabOnto()){
 						this.imageName = "robot_on_rope_left";
@@ -111,10 +112,13 @@ class ActiveActor extends Actor {
 				this.x -= 1;
 				return;
 			}
+				}
+				this.x -= 1;
+				return;
 		}
 		}
 		if(dx == 1){
-			if(control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y] instanceof Gold){ // nao passamos por ouro mas temos que apanhar
+			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y] instanceof Gold){ // nao passamos por ouro mas temos que apanhar
 				if(!this.isFriendly())
 					this.imageName = "robot_runs_right";
 				else{
@@ -125,6 +129,7 @@ class ActiveActor extends Actor {
 					}
 				}
 				this.left = false;
+				if(this.y != (WORLD_HEIGHT -1)){
 				if((control.world[this.x + 1][this.y + 1].canFallThrou()) && !this.isFriendly()){
 					if(control.world[this.x + 1][this.y].canGrabOnto()){
 						this.imageName = "robot_on_rope_right";
@@ -138,10 +143,13 @@ class ActiveActor extends Actor {
 				this.x += 1;
 				return;
 			}
+		}
+			this.x += 1;
+			return;
 			}
 		}
 		if(dy == -1){
-			if(control.world[this.x][this.y].isClimable() && control.world[this.x][this.y -1].canGoThrou()){
+			if((control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y-1].canBeTaken() ||control.world[this.x][this.y-1].isClimable())) ||control.world[this.x][this.y].isClimable() && (control.world[this.x][this.y -1].canGoThrou() || control.world[this.x][this.y -1].canBeTaken())){
 				if(!this.isFriendly()){
 					if(this.left){
 					this.imageName = "robot_on_ladder_left";
@@ -166,7 +174,7 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == 1){
-			if(control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y + 1].canGoThrou()))){
+			if(control.world[this.x][this.y + 1].canBeTaken()||control.world[this.x][this.y + 1].canFallThrou() ||control.world[this.x][this.y + 1].isClimable() || (control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y + 1].canGoThrou()))){
 				if(!this.isFriendly()){
 					if(this.left){
 					this.imageName = "robot_on_ladder_left";
@@ -282,8 +290,8 @@ class Hero extends ActiveActor {
 	}
 	animation() {
 		
-		if(( (this.y == (WORLD_HEIGHT - 1))|| (this.surrounded())) && this.isInHole(this.x,this.y) ){
-			control.resetLevel();
+		if(( (this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y))|| (this.surrounded())) && this.isInHole(this.x,this.y) ){
+			control.resetLevel(); //SOME WIERD ERRORS COULD BE CAUSED BY (this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y))
 			return;
 		}
 
@@ -326,9 +334,20 @@ class Hero extends ActiveActor {
 			else
 				this.imageName = "hero_falls_right";
 			this.y += 1;
+			if(!this.isFalling()){
+				if(this.left)
+				this.imageName = "hero_runs_left";
+			else
+				this.imageName = "hero_runs_right";
+			}
+			if(control.worldActive[this.x][this.y] != empty && !control.worldActive[this.x][this.y].isFriendly()){
+				control.resetLevel();
+				return;
+			}
 			this.show();
 			return;
 		}
+
         if( k == ' ' ) { 
 			if(this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right"){
 				if(control.world[this.x + 1][this.y +1].isDestroyable() && !(control.world[this.x + 1][this.y].isWalkable()) && !(control.world[this.x + 1][this.y].isClimable())){
@@ -394,9 +413,6 @@ return;
 		this.show();
 		document.getElementById('text1').value = this.gold;
 		return;
-        this.x += dx; //move
-        this.y += dy;
-        this.show();//mostra new place
 	}
 }
 
@@ -608,7 +624,7 @@ class GameControl {
 			document.getElementById('text2').value = this.totalGold;
 			document.getElementById('text3').value = this.levelNum;
 			document.getElementById('text4').value = MAPS.length;
-			alert(this.totalGold);
+		//	alert(this.totalGold);
 	}
 	insideWorld(x,y){
 		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
