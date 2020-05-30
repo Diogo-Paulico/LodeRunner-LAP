@@ -434,6 +434,21 @@ class Robot extends ActiveActor {
 		control.world[x][y] = new Gold(x,y);
 		control.world[x][y].show();
 	}
+
+	handleFloor(dx){
+		if(this.animationNumber >= 56 && this.hasGold()){
+			if(!control.world[this.x - dx][this.y].isWalkable() && !control.world[this.x - dx][this.y].canGrabOnto() && !control.world[this.x - dx][this.y].isClimable()){
+				this.returnGold(this.x - dx, this.y);
+			}
+
+			if(control.worldActive[this.x + dx][this.y].isFriendly()){
+				this.hide();
+				this.move(dx,0);
+				this.show();
+			}
+		}
+	}
+	
 	
 	animation(){
 		if(hero.x == this.x && hero.y == this.y){
@@ -469,6 +484,11 @@ class Robot extends ActiveActor {
 				return;
 			}
 				if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
+					if(this.y == (WORLD_HEIGHT -1) && !hero.isInHole(this.x,this.y)){
+						this.handleFloor(1);
+						return;
+					}
+
 					this.left = false;
 					//this.imageName = "robot_runs_right";
 					if(this.animationNumber >= 56 && this.hasGold()){
@@ -494,7 +514,10 @@ class Robot extends ActiveActor {
 				}
 			
 			if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
-				
+				if(this.y == (WORLD_HEIGHT -1) && !hero.isInHole(this.x,this.y)){
+					this.handleFloor(-1);
+					return;
+				}	
 				this.left = true;
 				//this.imageName = "robot_runs_left";
 				if(this.animationNumber >= 56 && this.hasGold()){
@@ -519,6 +542,9 @@ class Robot extends ActiveActor {
 			}
 			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
 				//if( control.world[this.x][this.y +1].canGoThrou()){
+					if(this.y == (WORLD_HEIGHT -1) && !hero.isInHole(this.x,this.y)){
+						return;
+					}
 					if(this.animationNumber >= 56 && this.hasGold()){
 						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){	
 							this.returnGold(this.x+1, this.y);
