@@ -297,7 +297,7 @@ class Hero extends ActiveActor {
 			return;
 		}
 
-		if(control.isLevelDone(this.gold) && this.y == 0){
+		if(control.isLevelDone(this.gold) && (this.y == 0) && control.world[this.x][this.y].isClimable()){
 			control.OutOfLevelDone(this.x,this.y);
 			return;
 		}
@@ -695,8 +695,8 @@ class GameControl {
 	loadNextLevel(){
 		this.totalGold = 0;
 		this.levelNum++;
-		if(levelNum > MAPS.length){
-			alert("Parabéns! Completou o último nível. Prima 'OK' para voltar ao 1º Nível.")
+		if(this.levelNum > MAPS.length){
+			alert("Parabéns! Completou o último nível. Prima 'OK' para voltar ao 1º Nível.");
 			this.loadCustomLevel(1);
 			return;
 		}
