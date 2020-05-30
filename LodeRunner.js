@@ -187,9 +187,16 @@ class ActiveActor extends Actor {
 					this.left = true;}
 
 				}
-				else
+				else{
+					if(this.left){
 					this.imageName = "hero_on_ladder_left";
-				
+					this.left = false;
+				}
+					else{
+					this.imageName = "hero_on_ladder_right";
+					this.left = true;
+				}
+				}
 				this.y += 1;
 				return;
 			}
