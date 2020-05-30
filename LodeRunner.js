@@ -85,8 +85,8 @@ class ActiveActor extends Actor {
 	move(dx,dy){
 		if(control.insideWorld(this.x + dx, this.y + dy)){
 		if(dx == -1){
-			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y] instanceof Gold){
-				if(this instanceof Robot)
+			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y].canBeTaken()){
+				if(!this.isFriendly())
 					this.imageName = "robot_runs_left";
 				else{
 					this.imageName = "hero_runs_left";
@@ -118,7 +118,7 @@ class ActiveActor extends Actor {
 		}
 		}
 		if(dx == 1){
-			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y] instanceof Gold){ // nao passamos por ouro mas temos que apanhar
+			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y].canBeTaken()){ // nao passamos por ouro mas temos que apanhar
 				if(!this.isFriendly())
 					this.imageName = "robot_runs_right";
 				else{
@@ -640,7 +640,7 @@ class GameControl {
 		}
 	}
 	resetLevel(){
-		alert("you loose brah.")
+		alert("Perdeu. Para recomeçar o nível prima 'OK'");
 		this.levelNum--;
 		this.loadNextLevel();
 	}
