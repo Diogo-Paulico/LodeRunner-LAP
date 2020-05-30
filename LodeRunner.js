@@ -21,6 +21,7 @@ Testamos o programa em vários níveis e segundo o que conseguimos determinar,
  o 1º nível. No HTML adicionamos um contador de níveis que apresenta 
  o nível corrente e número de níveis totais; um contador de ouro que 
  apresenta o ouro que o herói tem e todo o ouro do nível. 
+ Existe um botão ("Recomeçar nível") que recarrega o nível atual.
  Adicionamos ainda um elemento <select> que permite escolher um dos níveis da 
  lista (todos os níveis válidos e caso sejam adicionados mais, 
  surgirão nesta lista), ao carregar em 'IR' o nível escolhido é carregado.
@@ -739,7 +740,7 @@ class GameControl {
 		this.levelNum++;
 		if(this.levelNum > MAPS.length){
 			alert("Parabéns! Completou o último nível." 
-			+ "Prima 'OK' para voltar ao 1º Nível.");//ver como separar
+			+ "Prima 'OK' para voltar ao 1º Nível.");
 			this.loadCustomLevel(1);
 			return;
 		}
