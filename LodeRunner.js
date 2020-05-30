@@ -495,7 +495,7 @@ class Robot extends ActiveActor {
 
 					this.left = false;
 					//this.imageName = "robot_runs_right";
-					if(this.animationNumber >= 56 && this.hasGold()){
+					if(this.animationNumber >= 56 && this.hasGold() && control.insideWorld(this.x-1,this.y+1)){
 						if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
 							this.returnGold(this.x -1, this.y);
 						}
@@ -524,7 +524,7 @@ class Robot extends ActiveActor {
 				}	
 				this.left = true;
 				//this.imageName = "robot_runs_left";
-				if(this.animationNumber >= 56 && this.hasGold()){
+				if(this.animationNumber >= 56 && this.hasGold() && control.insideWorld(this.x+1,this.y+1)){
 					if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x +1][this.y].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
 						this.returnGold(this.x+1, this.y);
 					}
@@ -549,7 +549,7 @@ class Robot extends ActiveActor {
 					if(this.y == (WORLD_HEIGHT -1) && !hero.isInHole(this.x,this.y)){
 						return;
 					}
-					if(this.animationNumber >= 56 && this.hasGold()){
+					if(this.animationNumber >= 56 && this.hasGold() && control.insideWorld(this.x+1,this.y+1)){
 						if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){	
 							this.returnGold(this.x+1, this.y);
 					}
