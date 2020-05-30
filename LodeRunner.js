@@ -2,15 +2,6 @@
 
 Autores: Diogo Paulico (56187), Miguel Ramalhete (55833)
 
-Testamos o programa em vários níveis e segundo conseguimos determinar, todas as 
-funcionalidades pedidas pelo enunciado foram implementadas à exceção do movimento
-ascendente de robôs devido ao facto de serem priorizados os movimentos descendente,
-esquerda e direita pois são os mais importantes para garantir que estes se cruzam com
-o herói. Para além das funcionalidades pedidas implmentamos ainda o restauro automático
-de tijolos que não conteém robôs de modo a que o herói não pudesse "esburacar" o mundo.
-
-
-
 O ficheiro "LodeRunner.js" tem de incluir, logo nas primeiras linhas, um coment�rio
 inicial contendo: o nome e n�mero dos dois alunos que realizaram o projeto;
 indica��o de quais as partes do trabalho que foram feitas e das que n�o foram
@@ -427,10 +418,6 @@ class Hero extends ActiveActor {
 				this.x +=1;
 				this.show();
 			}
-				if(control.world[this.x][this.y] != empty && !control.world[this.x][this.y].isFriendly()){
-					control.resetLevel();
-					return;	
-				}
 				return;
 			}
 		}
@@ -456,10 +443,6 @@ class Hero extends ActiveActor {
 					}
 					this.x -= 1;
 					this.show();
-					if(control.world[this.x][this.y] != empty && !control.world[this.x][this.y].isFriendly()){
-						control.resetLevel();
-						return;	
-					}
 					return;
 					}
 				}
@@ -737,8 +720,8 @@ class GameControl {
 		this.totalGold = 0;
 		this.levelNum++;
 		if(this.levelNum > MAPS.length){
-			alert("Parabéns! Completou o último nível. " 
-			+ "Prima 'OK' para voltar ao 1º Nível.");
+			alert("Parabéns! Completou o último nível." 
+			+ "Prima 'OK' para voltar ao 1º Nível.");//ver como separar
 			this.loadCustomLevel(1);
 			return;
 		}
