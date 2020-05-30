@@ -2,12 +2,27 @@
 
 Autores: Diogo Paulico (56187), Miguel Ramalhete (55833)
 
-Testamos o programa em vários níveis e segundo conseguimos determinar, todas as 
-funcionalidades pedidas pelo enunciado foram implementadas à exceção do movimento
-ascendente de robôs devido ao facto de serem priorizados os movimentos descendente,
-esquerda e direita pois são os mais importantes para garantir que estes se cruzam com
-o herói. Para além das funcionalidades pedidas implmentamos ainda o restauro automático
-de tijolos que não conteém robôs de modo a que o herói não pudesse "esburacar" o mundo.
+Testamos o programa em vários níveis e segundo conseguimos determinar, 
+todas as funcionalidades pedidas pelo enunciado foram implementadas à exceção do 
+movimento ascendente de robôs devido ao facto de serem priorizados os movimentos 
+descendente, esquerda e direita pois são os mais importantes para garantir que
+estes se cruzam com o herói. Para além das funcionalidades pedidas 
+implementamos ainda o restauro automático de tijolos que não contém robôs de
+modo a que o herói não pudesse "esburacar" o mundo. Implementamos ainda o 
+recomeço do nível caso o herói ficasse preso num buraco que criou, havendo 
+raras situações em que este evento não se verifica. Em certos blocos de escada 
+escondida a queda é interrompida. Existem raras situações em que recuo causa a 
+substituição do robô pelo herói na matriz world active motivadas pela 
+desaceleração da animação do herói necessária para tornar os níveis jogáveis. 
+Caso um robô alcance o herói é apresentada uma mensagem no browser, 
+e ao clicar 'OK' o nível recomeça; Quando terminamos o nível somos encaminhados 
+para o nível seguinte. Quando terminamos o último nível é nos apresentada uma
+mensagem de parabéns e somos encaminhados para o 1º nível. No HTML adicionamos
+um contador de níveis que apresenta o nível corrente e número de níveis totais;
+um contador de ouro que apresenta o ouro que o herói tem e todo o ouro do nível.
+Adicionamos ainda uma elemento <select> que permite escolher um dos níveis da 
+lista (todos níveis válidos e caso sejam adicionados mais, surgirão nesta lista), 
+ao carregar em 'IR' o nível escolhido é carregado.
 
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
