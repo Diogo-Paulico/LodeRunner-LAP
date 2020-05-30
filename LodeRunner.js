@@ -443,13 +443,12 @@ class Robot extends ActiveActor {
 			if(!control.world[this.x - dx][this.y].isWalkable() && !control.world[this.x - dx][this.y].canGrabOnto() && !control.world[this.x - dx][this.y].isClimable()){
 				this.returnGold(this.x - dx, this.y);
 			}
-
+		}
 			if(control.worldActive[this.x + dx][this.y].isFriendly()){
 				this.hide();
 				this.move(dx,0);
 				this.show();
 			}
-		}
 	}
 	
 	
