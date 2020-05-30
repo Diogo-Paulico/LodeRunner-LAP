@@ -441,11 +441,11 @@ class Robot extends ActiveActor {
 	}
 
 	handleFloor(dx){
-		if(this.animationNumber >= 56 && this.hasGold()){
+	/*	if(this.animationNumber >= 56 && this.hasGold()){
 			if(!control.world[this.x - dx][this.y].isWalkable() && !control.world[this.x - dx][this.y].canGrabOnto() && !control.world[this.x - dx][this.y].isClimable()){
 				this.returnGold(this.x - dx, this.y);
 			}
-		}
+		}*/
 			if(control.worldActive[this.x + dx][this.y].isFriendly()){
 				this.hide();
 				this.move(dx,0);
