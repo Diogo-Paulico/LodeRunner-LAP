@@ -349,7 +349,10 @@ class Hero extends ActiveActor {
 		}
 
         if( k == ' ' ) { 
-			if(this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right"){
+			if(control.world[this.x][this.y].isClimable() || control.world[this.x][this.y].canGrabOnto()){
+				return;
+			}
+			if((this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right")){
 				if(control.world[this.x + 1][this.y +1].isDestroyable() && !(control.world[this.x + 1][this.y].isWalkable()) && !(control.world[this.x + 1][this.y].isClimable())){
 				let brick = control.world[this.x + 1][this.y + 1]; 	
 				brick.destroyed = true;
