@@ -149,7 +149,9 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == -1){
-			if((control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y-1].canBeTaken() ||control.world[this.x][this.y-1].isClimable())) ||control.world[this.x][this.y].isClimable() && (control.world[this.x][this.y -1].canGoThrou() || control.world[this.x][this.y -1].canBeTaken())){
+			//(control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y-1].canBeTaken() ||control.world[this.x][this.y-1].isClimable())) ||control.world[this.x][this.y].isClimable() && (control.world[this.x][this.y -1].canGoThrou() || control.world[this.x][this.y -1].canBeTaken())
+			//(control.world[this.x][this.y].isClimable() && control.world[this.x][this.y -1].canGoThrou()
+			if((control.world[this.x][this.y].isClimable() && (control.world[this.x][this.y -1].canGoThrou() || control.world[this.x][this.y -1].canBeTaken()))){
 				if(!this.isFriendly()){
 					if(this.left){
 					this.imageName = "robot_on_ladder_left";
