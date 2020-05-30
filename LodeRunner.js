@@ -695,6 +695,11 @@ class GameControl {
 	loadNextLevel(){
 		this.totalGold = 0;
 		this.levelNum++;
+		if(levelNum > MAPS.length){
+			alert("Parabéns! Completou o último nível. Prima 'OK' para voltar ao 1º Nível.")
+			this.loadCustomLevel(1);
+			return;
+		}
 		this.levelCompleted = false;
 		this.clearLevel();
 		this.loadLevel(this.levelNum);
