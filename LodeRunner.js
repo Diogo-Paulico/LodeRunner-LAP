@@ -351,7 +351,7 @@ class Hero extends ActiveActor {
 		}
 
         if( k == ' ' ) { 
-			if(control.world[this.x][this.y].isClimable() || control.world[this.x][this.y].canGrabOnto()){
+			if((control.world[this.x][this.y].isClimable() && !control.world[this.x][this.y].isWalkable()) || control.world[this.x][this.y].canGrabOnto()){
 				return;
 			}
 			if((this.imageName === "hero_runs_right" ||this.imageName === "hero_shoots_right")){
