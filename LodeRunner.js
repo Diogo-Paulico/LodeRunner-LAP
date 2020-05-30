@@ -85,7 +85,7 @@ class ActiveActor extends Actor {
 	move(dx,dy){
 		if(control.insideWorld(this.x + dx, this.y + dy)){
 		if(dx == -1){
-			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y].canBeTaken()){
+			if((this.y == (WORLD_HEIGHT -1) && control.world[this.x - 1][this.y].canGoThrou())|| control.world[this.x - 1][this.y].canGoThrou()|| control.world[this.x - 1][this.y].canBeTaken()){
 				if(!this.isFriendly())
 					this.imageName = "robot_runs_left";
 				else{
@@ -118,7 +118,7 @@ class ActiveActor extends Actor {
 		}
 		}
 		if(dx == 1){
-			if(this.y == (WORLD_HEIGHT -1) || control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y].canBeTaken()){ // nao passamos por ouro mas temos que apanhar
+			if((this.y == (WORLD_HEIGHT -1) && control.world[this.x + 1][this.y].canGoThrou()) || control.world[this.x + 1][this.y].canGoThrou() || control.world[this.x + 1][this.y].canBeTaken()){ // nao passamos por ouro mas temos que apanhar
 				if(!this.isFriendly())
 					this.imageName = "robot_runs_right";
 				else{
