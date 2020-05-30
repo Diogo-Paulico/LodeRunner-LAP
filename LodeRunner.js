@@ -2,11 +2,12 @@
 
 Autores: Diogo Paulico (56187), Miguel Ramalhete (55833)
 
-O ficheiro "LodeRunner.js" tem de incluir, logo nas primeiras linhas, um coment�rio
-inicial contendo: o nome e n�mero dos dois alunos que realizaram o projeto;
-indica��o de quais as partes do trabalho que foram feitas e das que n�o foram
-feitas (para facilitar uma corre��o sem enganos); ainda possivelmente alertando
-para alguns aspetos da implementa��o que possam ser menos �bvios para o avaliador.
+Testamos o programa em vários níveis e segundo conseguimos determinar, todas as 
+funcionalidades pedidas pelo enunciado foram implementadas à exceção do movimento
+ascendente de robôs devido ao facto de serem priorizados os movimentos descendente,
+esquerda e direita pois são os mais importantes para garantir que estes se cruzam com
+o herói. Para além das funcionalidades pedidas implmentamos ainda o restauro automático
+de tijolos que não conteém robôs de modo a que o herói não pudesse "esburacar" o mundo.
 
 01234567890123456789012345678901234567890123456789012345678901234567890123456789
 
