@@ -66,7 +66,6 @@ class ActiveActor extends Actor {
 		this.time = 0;	// timestamp used in the control of the animations
 	}
 	show() {
-		//alterar imagename aqui?
 		control.worldActive[this.x][this.y] = this;
 		this.draw(this.x, this.y);
 	}
@@ -79,7 +78,7 @@ class ActiveActor extends Actor {
 
 	animation() {
 	}
-	isFalling() { // grabs gold UwU
+	isFalling() { 
 		if(control.insideWorld(this.x,this.y + 1)){
 		if(control.world[this.x][this.y + 1].canGrabOnto() ||
 		 control.world[this.x][this.y + 1].canFallThrou() ||
@@ -171,8 +170,6 @@ class ActiveActor extends Actor {
 			}
 		}
 		if(dy == -1){
-			//(control.world[this.x][this.y].canGrabOnto() && (control.world[this.x][this.y-1].canBeTaken() ||control.world[this.x][this.y-1].isClimable())) ||control.world[this.x][this.y].isClimable() && (control.world[this.x][this.y -1].canGoThrou() || control.world[this.x][this.y -1].canBeTaken())
-			//(control.world[this.x][this.y].isClimable() && control.world[this.x][this.y -1].canGoThrou()
 			if((control.world[this.x][this.y].isClimable() &&
 			 (control.world[this.x][this.y -1].canGoThrou() ||
 			  control.world[this.x][this.y -1].canBeTaken()))){
@@ -333,7 +330,7 @@ class Hero extends ActiveActor {
 		
 		if(( (this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y))||
 		 (this.surrounded())) && this.isInHole(this.x,this.y) ){
-			control.resetLevel(); //SOME WIERD ERRORS COULD BE CAUSED BY (this.y == (WORLD_HEIGHT - 1) && this.isInHole(this.x,this.y))
+			control.resetLevel(); 
 			return;
 		}
 
@@ -350,7 +347,7 @@ class Hero extends ActiveActor {
 					[this.destroyedBricks[i].y-1] == empty){
 				var bricks = this.destroyedBricks.splice(i,1);
 				var brick = bricks[0];
-				control.world[(brick.x)][(brick.y)] = brick; //backBrick.x is undefined
+				control.world[(brick.x)][(brick.y)] = brick; 
 				brick.show();
 				if(control.worldActive[brick.x][brick.y] != empty &&
 					 !control.worldActive[brick.x][brick.y].isFriendly()){
@@ -367,7 +364,6 @@ class Hero extends ActiveActor {
 		if(control.world[this.x][this.y].canBeTaken()){
 			control.world[this.x][this.y].hide();
 			this.gold ++;
-		//	alert(this.gold);
 		}
 		var k = control.getKey();
 		
@@ -424,7 +420,7 @@ class Hero extends ActiveActor {
 			}
 				return;
 			}
-			}
+		}
 			else{
 				if(this.imageName === "hero_runs_left" ||
 				 this.imageName === "hero_shoots_left"){
@@ -459,11 +455,7 @@ return;
 		
 		if( k == null ) return;
 		let [dx, dy] = k;
-		this.hide(); //esconde onde eesta
-	/*	if(dx == -1)
-			this.imageName = "hero_runs_left";
-		if(dx == 1)
-			this.imageName = "hero_runs_right";*/
+		this.hide(); 
 		if(control.insideWorld(this.x + dx,this.y + dy)){
 		if(control.worldActive[this.x + dx][this.y + dy] != empty &&
 			 !control.worldActive[this.x + dx][this.y + dy].isFriendly() &&
@@ -486,7 +478,6 @@ class Robot extends ActiveActor {
 		this.dy = 0;
 		this.gold = false;
 		this.animationNumber = 0;
-		//grabbed;
 	}
 	hasGold(){
 		return this.gold;
@@ -499,11 +490,6 @@ class Robot extends ActiveActor {
 	}
 
 	handleFloor(dx){
-	/*	if(this.animationNumber >= 56 && this.hasGold()){
-			if(!control.world[this.x - dx][this.y].isWalkable() && !control.world[this.x - dx][this.y].canGrabOnto() && !control.world[this.x - dx][this.y].isClimable()){
-				this.returnGold(this.x - dx, this.y);
-			}
-		}*/
 			if(control.worldActive[this.x + dx][this.y].isFriendly()){
 				this.hide();
 				this.move(dx,0);
@@ -519,7 +505,6 @@ class Robot extends ActiveActor {
 		}
 
 		if(control.world[this.x][this.y].canBeTaken() && !this.hasGold()){
-			//grabbed = control.world[this.x][this.y];
 			control.world[this.x][this.y].hide();
 			this.gold = true;
 		}
@@ -553,7 +538,6 @@ class Robot extends ActiveActor {
 					}
 
 					this.left = false;
-					//this.imageName = "robot_runs_right";
 					if(this.animationNumber >= 56 && this.hasGold() &&
 					 control.insideWorld(this.x-1,this.y+1)){
 						if(control.world[this.x - 1][this.y + 1].isWalkable() &&
@@ -588,7 +572,6 @@ class Robot extends ActiveActor {
 					return;
 				}	
 				this.left = true;
-				//this.imageName = "robot_runs_left";
 				if(this.animationNumber >= 56 && this.hasGold() &&
 				 control.insideWorld(this.x+1,this.y+1)){
 					if(control.world[this.x + 1][this.y + 1].isWalkable() &&
@@ -616,7 +599,6 @@ class Robot extends ActiveActor {
 				return;
 			}
 			if(distance(this.x, this.y + 1, hero.x, hero.y) < dist){
-				//if( control.world[this.x][this.y +1].canGoThrou()){
 					if(this.y == (WORLD_HEIGHT -1) &&
 					 !hero.isInHole(this.x,this.y)){
 						return;
@@ -639,41 +621,6 @@ class Robot extends ActiveActor {
 				}
 			return;
 			}
-
-			
-			
-			/*	else{
-					if(distance(this.x - 1, this.y, hero.x, hero.y) < dist ){
-				
-						this.left = true;
-						//this.imageName = "robot_runs_left";
-						if(this.animationNumber >= 56 && this.hasGold()){
-							if(control.world[this.x + 1][this.y + 1].isWalkable() && !control.world[this.x + 1][this.y + 1].isClimable() && !control.world[this.x + 1][this.y].canGrabOnto() && !control.world[this.x + 1][this.y].isClimable()){
-								this.returnGold(this.x +1, this.y);
-								
-							}
-						}
-						if(control.worldActive[this.x -1][this.y].isFriendly()){
-							this.hide();
-							this.move(-1,0);
-							this.show();
-						}
-					}
-					if(distance(this.x + 1, this.y, hero.x, hero.y) < dist){
-						this.left = false;
-						//this.imageName = "robot_runs_right";
-						if(this.animationNumber >= 56 && this.hasGold()){
-							if(control.world[this.x - 1][this.y + 1].isWalkable() && !control.world[this.x - 1][this.y + 1].isClimable() && !control.world[this.x - 1][this.y].canGrabOnto() && !control.world[this.x - 1][this.y].isClimable()){
-								this.returnGold(this.x -1, this.y);
-							}
-						}
-						if(control.worldActive[this.x +1][this.y].isFriendly()){
-							this.hide();
-							this.move(1,0);
-							this.show();
-						}
-
-			*/
 
 			if(distance(this.x, this.y - 1, hero.x, hero.y) < dist ){
 				
@@ -731,7 +678,6 @@ class GameControl {
 			document.getElementById('text2').value = this.totalGold;
 			document.getElementById('text3').value = this.levelNum;
 			document.getElementById('text4').value = MAPS.length;
-		//	alert(this.totalGold);
 	}
 	insideWorld(x,y){
 		if(x >= 0 && x < WORLD_WIDTH && y < WORLD_HEIGHT)
@@ -774,7 +720,8 @@ class GameControl {
 		this.totalGold = 0;
 		this.levelNum++;
 		if(this.levelNum > MAPS.length){
-			alert("Parabéns! Completou o último nível. Prima 'OK' para voltar ao 1º Nível.");//ver como separar
+			alert("Parabéns! Completou o último nível." 
+			+ "Prima 'OK' para voltar ao 1º Nível.");//ver como separar
 			this.loadCustomLevel(1);
 			return;
 		}
@@ -855,15 +802,11 @@ function onLoad() {
 
 let audio = null;
 function b1() { 
-	/*if( audio == null )
-        audio = new Audio("http://home.jumpman.fr/partage/smash/Individual%20tracks%20%28aac%29/24-04%20Sonic%20Boom%20%5BSonic%20CD%5D.m4a");
-    audio.loop = true;
-	audio.play(); */ // requires a previous user interaction with the page
 	control.levelNum--;
 	control.loadNextLevel();
  }
 
-function b2() {//audio.pause(); 
+function b2() {
 	var e = document.getElementById("mySelect");
 	var value = e.options[e.selectedIndex].value;
 	control.loadCustomLevel(value);
