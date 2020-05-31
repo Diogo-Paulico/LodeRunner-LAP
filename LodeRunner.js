@@ -100,8 +100,8 @@ class ActiveActor extends Actor {
 	isFalling() { 
 		if(control.insideWorld(this.x,this.y + 1)){
 		if(control.world[this.x][this.y + 1].canGrabOnto() ||
-		 control.world[this.x][this.y + 1].canFallThrou() ||
-		 control.world[this.x][this.y + 1].canBeTaken()){
+			 control.world[this.x][this.y + 1].canFallThrou() ||
+		 	control.world[this.x][this.y + 1].canBeTaken()){
 			if(!(control.world[this.x][this.y].canGrabOnto()) &&
 			 !(control.world[this.x][this.y].isClimable()))
 			return true;
@@ -338,8 +338,8 @@ class Hero extends ActiveActor {
 		if(control.insideWorld(this.x + 1,this.y) &&
 		 control.insideWorld(this.x - 1, this.y)){
 			if(control.world[this.x + 1][this.y].isWalkable() &&
-			 control.world[this.x - 1][this.y].isWalkable() &&
-			  control.world[this.x][this.y + 1].isWalkable()){
+			 	control.world[this.x - 1][this.y].isWalkable() &&
+			  	control.world[this.x][this.y + 1].isWalkable()){
 				return true;
 			}
 		}
@@ -364,10 +364,10 @@ class Hero extends ActiveActor {
 				if(this.checkIfRestore(this.destroyedBricks[i])){
 				if(control.worldActive[this.destroyedBricks[i].x]
 					[this.destroyedBricks[i].y-1] == empty){
-				var bricks = this.destroyedBricks.splice(i,1);
-				var brick = bricks[0];
-				control.world[(brick.x)][(brick.y)] = brick; 
-				brick.show();
+					var bricks = this.destroyedBricks.splice(i,1);
+					var brick = bricks[0];
+					control.world[(brick.x)][(brick.y)] = brick; 
+					brick.show();
 				if(control.worldActive[brick.x][brick.y] != empty &&
 					 !control.worldActive[brick.x][brick.y].isFriendly()){
 					let pers = control.worldActive[brick.x][brick.y];
