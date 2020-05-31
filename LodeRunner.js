@@ -14,7 +14,10 @@ Testamos o programa em vários níveis e segundo o que conseguimos determinar,
  de escada escondida a queda é interrompida. Existem raras situações em que 
  recuo causa a substituição do robô pelo herói na matriz world active 
  motivadas pela desaceleração da animação do herói necessária para tornar 
- os níveis jogáveis. Caso um robô alcance o herói é apresentada uma mensagem 
+ os níveis jogáveis, ainda neste ponto há situações onde dois robôs se fundem
+ (apenas observado em cordas) apesar de existir a verificação da existência
+ de haver outro robo na posição para onde este se quer mover (!isFriendly()).
+.Caso um robô alcance o herói é apresentada uma mensagem 
  no browser, e ao clicar 'OK' o nível recomeça; Quando terminamos o nível 
  somos encaminhados para o nível seguinte. Quando terminamos o último nível 
  é nos apresentada uma mensagem de parabéns e somos encaminhados para 
