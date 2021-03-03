@@ -23,3 +23,8 @@ All the rules from the original Lode Runner game should apply to this remake.
 |------|---------|
 | Move up | <kbd>↑</kbd> or <kbd>Q</kbd> or <kbd>I</kbd>|
 | Move down | <kbd>↓</kbd> or <kbd>A</kbd> or <kbd>K</kbd>|
+
+## Authors
+
+* **Diogo Paulico** - *Initial work*
+* **Miguel Ramalhete** - *Initial Work*
